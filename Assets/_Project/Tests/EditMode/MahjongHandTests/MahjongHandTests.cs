@@ -731,5 +731,68 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.AreEqual(3, tiles.Count(t => t == TileType.Man5));
             Assert.AreEqual(1, tiles.Count(t => t == TileType.East));
         }
+        
+        [Test]
+        public void HandGenerator_Generates13TileHand()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateHand();
+
+            Assert.AreEqual(13, hand.TileCount);
+        }
+        
+        [Test]
+        public void HandGenerator_NeverGeneratesMoreThanFourCopiesOfTile()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateHand();
+
+            for (int i = 0; i < 34; i++)
+            {
+                var tile = (TileType)i;
+
+                Assert.LessOrEqual(hand.GetCount(tile), 4);
+            }
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesDifferentHands()
+        {
+            var generator = new HandGenerator();
+
+            var hand1 = generator.GenerateHand();
+            var hand2 = generator.GenerateHand();
+
+            Assert.IsFalse(
+                hand1.Tiles.SequenceEqual(hand2.Tiles));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratedHand_CanBeUsedByWaitCalculator()
+        {
+            var generator = new HandGenerator();
+            var calculator = new WaitCalculator();
+
+            var hand = generator.GenerateHand();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.AreSame(hand, result.Hand);
+            Assert.IsNotNull(result.Waits);
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesHandWithAtLeastOneWait()
+        {
+            var generator = new HandGenerator();
+            var calculator = new WaitCalculator();
+
+            var hand = generator.GenerateHand();
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.IsNotEmpty(result.Waits);
+        }
     }
 }
