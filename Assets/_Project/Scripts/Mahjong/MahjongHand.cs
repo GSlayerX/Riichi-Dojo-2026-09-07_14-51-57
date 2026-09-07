@@ -1,3 +1,5 @@
+using System;
+
 namespace RiichiDojo.Mahjong
 {
     public class MahjongHand
@@ -13,12 +15,28 @@ namespace RiichiDojo.Mahjong
 
         public void AddTile(TileType tile)
         {
-            _tileCounts[(int)tile]++;
+            int index = (int)tile;
+
+            if (_tileCounts[index] >= 4)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot have more than 4 copies of {tile}.");
+            }
+
+            _tileCounts[index]++;
         }
 
         public void RemoveTile(TileType tile)
         {
-            _tileCounts[(int)tile]--;
+            int index = (int)tile;
+
+            if (_tileCounts[index] <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot remove {tile} because it is not in the hand.");
+            }
+
+            _tileCounts[index]--;
         }
 
         public int TileCount
