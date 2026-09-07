@@ -17,11 +17,13 @@ namespace RiichiDojo.Mahjong
             _kokushiSolver = new KokushiSolver();
         }
 
-        public IReadOnlyList<TileType> CalculateWaits(MahjongHand hand)
+        public WaitResult CalculateWaits(MahjongHand hand)
         {
             if (hand.TileCount != 13)
             {
-                return new List<TileType>();
+                return new WaitResult(
+                    hand,
+                    new List<TileType>());
             }
             
             var waits = new List<TileType>();
@@ -47,7 +49,7 @@ namespace RiichiDojo.Mahjong
                 hand.RemoveTile(candidate);
             }
 
-            return waits;
+            return new WaitResult(hand, waits);
         }
     }
 }
