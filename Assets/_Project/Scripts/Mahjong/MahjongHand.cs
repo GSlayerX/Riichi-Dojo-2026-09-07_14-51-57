@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RiichiDojo.Mahjong
 {
@@ -51,6 +52,26 @@ namespace RiichiDojo.Mahjong
                 }
 
                 return total;
+            }
+        }
+        
+        public IReadOnlyList<TileType> Tiles
+        {
+            get
+            {
+                var tiles = new List<TileType>();
+
+                for (int i = 0; i < TileTypeCount; i++)
+                {
+                    TileType tile = (TileType)i;
+
+                    for (int j = 0; j < _tileCounts[i]; j++)
+                    {
+                        tiles.Add(tile);
+                    }
+                }
+
+                return tiles;
             }
         }
     }

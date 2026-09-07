@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using RiichiDojo.Mahjong;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RiichiDojo.Mahjong.Tests
 {
@@ -696,6 +697,39 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.AreEqual(2, result.Waits.Count);
             Assert.That(result.Waits, Does.Contain(TileType.Man2));
             Assert.That(result.Waits, Does.Contain(TileType.Man3));
+        }
+        
+        [Test]
+        public void Tiles_ReturnsAllTiles()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Sou5);
+
+            var tiles = hand.Tiles;
+
+            Assert.AreEqual(3, tiles.Count);
+            Assert.That(tiles, Does.Contain(TileType.Man1));
+            Assert.That(tiles, Does.Contain(TileType.Sou5));
+        }
+        
+        [Test]
+        public void Tiles_PreservesTileCopies()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.East);
+
+            var tiles = hand.Tiles;
+
+            Assert.AreEqual(4, tiles.Count);
+            Assert.AreEqual(3, tiles.Count(t => t == TileType.Man5));
+            Assert.AreEqual(1, tiles.Count(t => t == TileType.East));
         }
     }
 }
