@@ -23,11 +23,13 @@ namespace RiichiDojo.Mahjong
             {
                 return new WaitResult(
                     hand,
-                    new List<TileType>());
+                    new List<TileType>(),
+                    new List<HandPattern>());
             }
             
             var waits = new List<TileType>();
-
+            var allPatterns = new List<HandPattern>();
+            
             for (int i = 0; i < TileTypeCount; i++)
             {
                 TileType candidate = (TileType)i;
@@ -39,17 +41,43 @@ namespace RiichiDojo.Mahjong
 
                 hand.AddTile(candidate);
 
-                if (_standardHandSolver.IsWinningHand(hand)
-                    || _chiitoitsuSolver.IsWinningHand(hand)
-                    || _kokushiSolver.IsWinningHand(hand))
+                var patterns = new List<HandPattern>();
+
+                if (_standardHandSolver.IsWinningHand(hand))
+                {
+                    patterns.Add(HandPattern.Standard);
+                }
+
+                if (_chiitoitsuSolver.IsWinningHand(hand))
+                {
+                    patterns.Add(HandPattern.Chiitoitsu);
+                }
+
+                if (_kokushiSolver.IsWinningHand(hand))
+                {
+                    patterns.Add(HandPattern.Kokushi);
+                }
+
+                if (patterns.Count > 0)
                 {
                     waits.Add(candidate);
                 }
 
+                foreach (HandPattern pattern in patterns)
+                {
+                    if (!allPatterns.Contains(pattern))
+                    {
+                        allPatterns.Add(pattern);
+                    }
+                }
+                
                 hand.RemoveTile(candidate);
             }
 
-            return new WaitResult(hand, waits);
+            return new WaitResult(
+                hand,
+                waits,
+                allPatterns);
         }
     }
 }

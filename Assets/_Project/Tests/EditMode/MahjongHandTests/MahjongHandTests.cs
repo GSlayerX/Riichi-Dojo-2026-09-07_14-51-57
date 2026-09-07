@@ -691,7 +691,10 @@ namespace RiichiDojo.Mahjong.Tests
                 TileType.Man3
             };
 
-            var result = new WaitResult(hand, waits);
+            var result = new WaitResult(
+                hand,
+                waits,
+                new List<HandPattern>());
 
             Assert.AreSame(hand, result.Hand);
             Assert.AreEqual(2, result.Waits.Count);
@@ -794,5 +797,309 @@ namespace RiichiDojo.Mahjong.Tests
 
             Assert.IsNotEmpty(result.Waits);
         }
+        
+        [Test]
+        public void HandGenerator_GeneratedHand_HasValidWaits()
+        {
+            var generator = new HandGenerator();
+            var calculator = new WaitCalculator();
+
+            var hand = generator.GenerateHand();
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.GreaterOrEqual(result.Waits.Count, 1);
+            Assert.LessOrEqual(result.Waits.Count, 34);
+        }
+        
+        [Test]
+        public void TrainingQuestion_StoresHandAndWaits()
+        {
+            var hand = new MahjongHand();
+            hand.AddTile(TileType.Man1);
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var question = new TrainingQuestion(hand, waits);
+
+            Assert.AreSame(hand, question.Hand);
+            Assert.AreEqual(2, question.Waits.Count);
+            Assert.That(question.Waits, Does.Contain(TileType.Man2));
+            Assert.That(question.Waits, Does.Contain(TileType.Man3));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesTrainingQuestion()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion();
+
+            Assert.IsNotNull(question);
+            Assert.IsNotNull(question.Hand);
+            Assert.IsNotNull(question.Waits);
+            Assert.AreEqual(13, question.Hand.TileCount);
+            Assert.GreaterOrEqual(question.Waits.Count, 1);
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesDifferentQuestions()
+        {
+            var generator = new HandGenerator();
+
+            var question1 = generator.GenerateQuestion();
+            var question2 = generator.GenerateQuestion();
+
+            Assert.IsFalse(
+                question1.Hand.Tiles.SequenceEqual(question2.Hand.Tiles));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratedQuestion_HasSameHandAndWaits()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion();
+
+            var calculator = new WaitCalculator();
+            var result = calculator.CalculateWaits(question.Hand);
+
+            Assert.AreEqual(
+                result.Waits.Count,
+                question.Waits.Count);
+
+            foreach (var wait in result.Waits)
+            {
+                Assert.That(question.Waits, Does.Contain(wait));
+            }
+        }
+        
+        [Test]
+        public void HandGenerator_GenerateQuestion_HasAtLeastOneWait()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion();
+
+            Assert.IsNotEmpty(question.Waits);
+        }
+        
+        [Test]
+        public void HandGenerator_AcceptsWaitCalculator()
+        {
+            var calculator = new WaitCalculator();
+
+            var generator = new HandGenerator(calculator);
+
+            var question = generator.GenerateQuestion();
+
+            Assert.IsNotNull(question);
+            Assert.IsNotEmpty(question.Waits);
+        }
+        
+        [Test]
+        public void CalculateWaits_StandardHand_ReturnsStandardPattern()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin2);
+            hand.AddTile(TileType.Pin3);
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+            hand.AddTile(TileType.Sou3);
+
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+
+            hand.AddTile(TileType.Pin5);
+            hand.AddTile(TileType.Pin5);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Standard));
+        }
+        
+        [Test]
+        public void CalculateWaits_Chiitoitsu_ReturnsChiitoitsuPattern()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man3);
+
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin1);
+
+            hand.AddTile(TileType.Pin2);
+            hand.AddTile(TileType.Pin2);
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou1);
+
+            hand.AddTile(TileType.Sou2);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Chiitoitsu));
+        }
+        
+        [Test]
+        public void CalculateWaits_Kokushi_ReturnsKokushiPattern()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou9);
+
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.South);
+            hand.AddTile(TileType.West);
+            hand.AddTile(TileType.North);
+            hand.AddTile(TileType.White);
+            hand.AddTile(TileType.Green);
+
+            hand.AddTile(TileType.Man1);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Kokushi));
+        }
+        
+        [Test]
+        public void CalculateWaits_DoesNotDuplicatePatterns()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin2);
+            hand.AddTile(TileType.Pin3);
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+            hand.AddTile(TileType.Sou3);
+
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.East);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.AreEqual(
+                result.Patterns.Count,
+                new HashSet<HandPattern>(result.Patterns).Count);
+        }
+        
+        [Test]
+        public void CalculateWaits_PatternsContainOnlyUniqueValues()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man3);
+
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin1);
+
+            hand.AddTile(TileType.Pin2);
+            hand.AddTile(TileType.Pin2);
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou1);
+
+            hand.AddTile(TileType.Sou2);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.That(result.Patterns, Is.Not.Null);
+            Assert.That(result.Patterns.Count, Is.GreaterThan(0));
+        }
+        
+        [Test]
+        public void CalculateWaits_HandIsNot13Tiles_ReturnsEmptyPatterns()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.That(result.Waits, Is.Empty);
+            Assert.That(result.Patterns, Is.Empty);
+        }
+        
+        [Test]
+        public void CalculateWaits_TwoSidedWait_ReturnsOneStandardPattern()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin2);
+            hand.AddTile(TileType.Pin3);
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+            hand.AddTile(TileType.Sou3);
+
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+
+            hand.AddTile(TileType.Pin5);
+            hand.AddTile(TileType.Pin5);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.AreEqual(1, result.Patterns.Count);
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Standard));
+        }
+
     }
 }

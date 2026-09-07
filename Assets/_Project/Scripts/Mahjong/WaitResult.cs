@@ -6,13 +6,16 @@ namespace RiichiDojo.Mahjong
     {
         public MahjongHand Hand { get; }
         public IReadOnlyList<TileType> Waits { get; }
+        public IReadOnlyList<HandPattern> Patterns { get; }
 
         public WaitResult(
             MahjongHand hand,
-            IReadOnlyList<TileType> waits)
+            IReadOnlyList<TileType> waits,
+            IReadOnlyList<HandPattern> patterns)
         {
             Hand = hand;
             Waits = waits;
+            Patterns = patterns;
         }
     }
 }

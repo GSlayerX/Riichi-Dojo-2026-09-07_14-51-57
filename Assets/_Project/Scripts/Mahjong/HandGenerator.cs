@@ -2,22 +2,32 @@ using System;
 
 namespace RiichiDojo.Mahjong
 {
+    
     public class HandGenerator
     {
         private const int HandSize = 13;
         private const int TileTypeCount = 34;
 
         private readonly Random _random = new Random();
+        private readonly WaitCalculator _calculator;
 
+        public HandGenerator()
+        {
+            _calculator = new WaitCalculator();
+        }
+        
+        public HandGenerator(WaitCalculator calculator)
+        {
+            _calculator = calculator;
+        }
+        
         public MahjongHand GenerateHand()
         {
-            var calculator = new WaitCalculator();
-
             while (true)
             {
                 var hand = GenerateRandomHand();
 
-                var result = calculator.CalculateWaits(hand);
+                var result = _calculator.CalculateWaits(hand);
 
                 if (result.Waits.Count > 0)
                 {
@@ -43,6 +53,17 @@ namespace RiichiDojo.Mahjong
             }
 
             return hand;
+        }
+        
+        public TrainingQuestion GenerateQuestion()
+        {
+            var hand = GenerateHand();
+
+            var result = _calculator.CalculateWaits(hand);
+
+            return new TrainingQuestion(
+                hand,
+                result.Waits);
         }
     }
 }
