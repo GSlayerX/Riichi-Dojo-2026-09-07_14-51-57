@@ -63,7 +63,8 @@ namespace RiichiDojo.Mahjong
 
             return new TrainingQuestion(
                 hand,
-                result.Waits);
+                result.Waits,
+                result.Patterns);
         }
     }
 }

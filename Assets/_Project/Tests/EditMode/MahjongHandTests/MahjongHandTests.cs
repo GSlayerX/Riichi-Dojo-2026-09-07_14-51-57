@@ -823,12 +823,19 @@ namespace RiichiDojo.Mahjong.Tests
                 TileType.Man3
             };
 
-            var question = new TrainingQuestion(hand, waits);
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(hand, waits, patterns);
 
             Assert.AreSame(hand, question.Hand);
             Assert.AreEqual(2, question.Waits.Count);
             Assert.That(question.Waits, Does.Contain(TileType.Man2));
             Assert.That(question.Waits, Does.Contain(TileType.Man3));
+            Assert.AreEqual(1, question.Patterns.Count);
+            Assert.That(question.Patterns, Does.Contain(HandPattern.Standard));
         }
         
         [Test]
@@ -875,6 +882,8 @@ namespace RiichiDojo.Mahjong.Tests
             {
                 Assert.That(question.Waits, Does.Contain(wait));
             }
+            
+            Assert.That(question.Patterns.Count, Is.GreaterThan(0));
         }
         
         [Test]
@@ -1099,6 +1108,28 @@ namespace RiichiDojo.Mahjong.Tests
 
             Assert.AreEqual(1, result.Patterns.Count);
             Assert.That(result.Patterns, Does.Contain(HandPattern.Standard));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesQuestion_WithStandardPattern()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion();
+
+            Assert.That(
+                question.Waits.Count,
+                Is.GreaterThan(0));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratedQuestion_HasPattern()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion();
+
+            Assert.That(question.Patterns.Count, Is.GreaterThan(0));
         }
 
     }
