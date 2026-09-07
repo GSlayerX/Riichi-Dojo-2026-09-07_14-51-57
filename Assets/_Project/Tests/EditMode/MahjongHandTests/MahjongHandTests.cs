@@ -1120,10 +1120,6 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.That(
                 question.Waits.Count,
                 Is.GreaterThan(0));
-
-            Assert.That(
-                question.Patterns,
-                Does.Contain(HandPattern.Standard));
         }
         
         [Test]
@@ -1136,5 +1132,114 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.That(question.Patterns.Count, Is.GreaterThan(0));
         }
 
+        [Test]
+        public void HandGenerator_CanGenerateHandWithRequestedPattern()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateHand(HandPattern.Chiitoitsu);
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.That(
+                result.Patterns,
+                Does.Contain(HandPattern.Chiitoitsu));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesDifferentChiitoitsuHands()
+        {
+            var generator = new HandGenerator();
+
+            var firstHand = generator.GenerateHand(HandPattern.Chiitoitsu);
+            var secondHand = generator.GenerateHand(HandPattern.Chiitoitsu);
+
+            Assert.That(
+                firstHand.Tiles,
+                Is.Not.EqualTo(secondHand.Tiles));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesKokushiHandWithExpectedWait()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateRandomKokushiHand();
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.That(
+                hand.TileCount,
+                Is.EqualTo(13));
+
+            Assert.That(
+                result.Patterns,
+                Does.Contain(HandPattern.Kokushi));
+        }
+        
+        [Test]
+        public void CalculateWaits_KokushiPairWait_ReturnsOneTile()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou9);
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.South);
+            hand.AddTile(TileType.West);
+            hand.AddTile(TileType.North);
+            hand.AddTile(TileType.White);
+            hand.AddTile(TileType.Green);
+            hand.AddTile(TileType.Green);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.That(result.Waits.Count, Is.EqualTo(1));
+            Assert.That(result.Waits, Does.Contain(TileType.Red));
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Kokushi));
+        }
+        
+        [Test]
+        public void HandGenerator_CanGenerateKokushiHand()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateHand(HandPattern.Kokushi);
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.That(
+                result.Patterns,
+                Does.Contain(HandPattern.Kokushi));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesKokushiThirteenSidedHand()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateRandomKokushiHand(KokushiWaitType.ThirteenSided);
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.That(hand.TileCount, Is.EqualTo(13));
+            Assert.That(result.Waits.Count, Is.EqualTo(13));
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Kokushi));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesKokushiSingleTileWaitHand()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateRandomKokushiHand(
+                KokushiWaitType.SingleTile);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.That(hand.TileCount, Is.EqualTo(13));
+            Assert.That(result.Waits.Count, Is.EqualTo(1));
+            Assert.That(result.Patterns, Does.Contain(HandPattern.Kokushi));
+        }
     }
 }
