@@ -1120,6 +1120,10 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.That(
                 question.Waits.Count,
                 Is.GreaterThan(0));
+
+            Assert.That(
+                question.Patterns,
+                Does.Contain(HandPattern.Standard));
         }
         
         [Test]
