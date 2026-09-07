@@ -7,14 +7,23 @@ namespace RiichiDojo.Mahjong
         private const int TileTypeCount = 34;
 
         private readonly StandardHandSolver _standardHandSolver;
+        private readonly ChiitoitsuSolver _chiitoitsuSolver;
+        private readonly KokushiSolver _kokushiSolver;
 
         public WaitCalculator()
         {
             _standardHandSolver = new StandardHandSolver();
+            _chiitoitsuSolver = new ChiitoitsuSolver();
+            _kokushiSolver = new KokushiSolver();
         }
 
         public IReadOnlyList<TileType> CalculateWaits(MahjongHand hand)
         {
+            if (hand.TileCount != 13)
+            {
+                return new List<TileType>();
+            }
+            
             var waits = new List<TileType>();
 
             for (int i = 0; i < TileTypeCount; i++)
@@ -28,7 +37,9 @@ namespace RiichiDojo.Mahjong
 
                 hand.AddTile(candidate);
 
-                if (_standardHandSolver.IsWinningHand(hand))
+                if (_standardHandSolver.IsWinningHand(hand)
+                    || _chiitoitsuSolver.IsWinningHand(hand)
+                    || _kokushiSolver.IsWinningHand(hand))
                 {
                     waits.Add(candidate);
                 }

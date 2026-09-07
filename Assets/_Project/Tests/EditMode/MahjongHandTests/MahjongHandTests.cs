@@ -346,6 +346,329 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.AreEqual(1, waits.Count);
             Assert.That(waits, Does.Contain(TileType.Man3));
         }
+        
+        [Test]
+        public void CalculateWaits_HandIsNot13Tiles_ReturnsEmptyList()
+        {
+            var hand = new MahjongHand();
+            var calculator = new WaitCalculator();
 
+            // Только 12 тайлов.
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin2);
+            hand.AddTile(TileType.Pin3);
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+            hand.AddTile(TileType.Sou3);
+
+            hand.AddTile(TileType.Sou7);
+            hand.AddTile(TileType.Sou8);
+            hand.AddTile(TileType.Sou9);
+
+            var waits = calculator.CalculateWaits(hand);
+
+            Assert.IsEmpty(waits);
+        }
+        
+        [Test]
+        public void CalculateWaits_NoWinningTile_ReturnsEmptyList()
+        {
+            var hand = new MahjongHand();
+            var calculator = new WaitCalculator();
+
+            // 123 Manzu
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+
+            // 456 Pinzu
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin5);
+            hand.AddTile(TileType.Pin6);
+
+            // 789 Souzu
+            hand.AddTile(TileType.Sou7);
+            hand.AddTile(TileType.Sou8);
+            hand.AddTile(TileType.Sou9);
+
+            // 12 Souzu
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+
+            // 34 Manzu
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+
+            var waits = calculator.CalculateWaits(hand);
+
+            Assert.IsEmpty(waits);
+        }
+        
+        [Test]
+        public void IsWinningHand_Chiitoitsu_ReturnsTrue()
+        {
+            var hand = new MahjongHand();
+            var solver = new ChiitoitsuSolver();
+
+            // 11 Manzu
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            // 22 Manzu
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+
+            // 33 Pinzu
+            hand.AddTile(TileType.Pin3);
+            hand.AddTile(TileType.Pin3);
+
+            // 44 Pinzu
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin4);
+
+            // 55 Souzu
+            hand.AddTile(TileType.Sou5);
+            hand.AddTile(TileType.Sou5);
+
+            // 66 Souzu
+            hand.AddTile(TileType.Sou6);
+            hand.AddTile(TileType.Sou6);
+
+            // East East
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.East);
+
+            Assert.IsTrue(solver.IsWinningHand(hand));
+        }
+        
+        [Test]
+        public void IsWinningHand_Chiitoitsu_FourOfAKindIsNotTwoPairs()
+        {
+            var hand = new MahjongHand();
+            var solver = new ChiitoitsuSolver();
+
+            // 11 Manzu
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            // 22 Manzu
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+
+            // 33 Pinzu
+            hand.AddTile(TileType.Pin3);
+            hand.AddTile(TileType.Pin3);
+
+            // 44 Pinzu
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin4);
+
+            // Four 5 Souzu
+            hand.AddTile(TileType.Sou5);
+            hand.AddTile(TileType.Sou5);
+            hand.AddTile(TileType.Sou5);
+            hand.AddTile(TileType.Sou5);
+
+            // 66 Souzu
+            hand.AddTile(TileType.Sou6);
+            hand.AddTile(TileType.Sou6);
+
+            // East East
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.East);
+
+            Assert.IsFalse(solver.IsWinningHand(hand));
+        }
+        
+        [Test]
+        public void CalculateWaits_Chiitoitsu_ReturnsExpectedTile()
+        {
+            var hand = new MahjongHand();
+            var calculator = new WaitCalculator();
+
+            // 11 Manzu
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            // 22 Manzu
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+
+            // 33 Pinzu
+            hand.AddTile(TileType.Pin3);
+            hand.AddTile(TileType.Pin3);
+
+            // 44 Pinzu
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin4);
+
+            // 55 Souzu
+            hand.AddTile(TileType.Sou5);
+            hand.AddTile(TileType.Sou5);
+
+            // 66 Souzu
+            hand.AddTile(TileType.Sou6);
+            hand.AddTile(TileType.Sou6);
+
+            // Single East
+            hand.AddTile(TileType.East);
+
+            var waits = calculator.CalculateWaits(hand);
+
+            Assert.AreEqual(1, waits.Count);
+            Assert.That(waits, Does.Contain(TileType.East));
+        }
+        
+        [Test]
+        public void IsWinningHand_Kokushi_ReturnsTrue()
+        {
+            var hand = new MahjongHand();
+            var solver = new KokushiSolver();
+
+            // 1 Manzu
+            hand.AddTile(TileType.Man1);
+
+            // 9 Manzu
+            hand.AddTile(TileType.Man9);
+
+            // 1 Pinzu
+            hand.AddTile(TileType.Pin1);
+
+            // 9 Pinzu
+            hand.AddTile(TileType.Pin9);
+
+            // 1 Souzu
+            hand.AddTile(TileType.Sou1);
+
+            // 9 Souzu
+            hand.AddTile(TileType.Sou9);
+
+            // Honors
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.South);
+            hand.AddTile(TileType.West);
+            hand.AddTile(TileType.North);
+            hand.AddTile(TileType.White);
+            hand.AddTile(TileType.Green);
+            hand.AddTile(TileType.Red);
+
+            // Duplicate terminal/honor
+            hand.AddTile(TileType.Man1);
+
+            Assert.IsTrue(solver.IsWinningHand(hand));
+        }
+        
+        [Test]
+        public void CalculateWaits_Kokushi_ReturnsExpectedTile()
+        {
+            var hand = new MahjongHand();
+            var calculator = new WaitCalculator();
+
+            // 1 Manzu
+            hand.AddTile(TileType.Man1);
+
+            // 9 Manzu
+            hand.AddTile(TileType.Man9);
+
+            // 1 Pinzu
+            hand.AddTile(TileType.Pin1);
+
+            // 9 Pinzu
+            hand.AddTile(TileType.Pin9);
+
+            // 1 Souzu
+            hand.AddTile(TileType.Sou1);
+
+            // 9 Souzu
+            hand.AddTile(TileType.Sou9);
+
+            // Honors
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.South);
+            hand.AddTile(TileType.West);
+            hand.AddTile(TileType.North);
+            hand.AddTile(TileType.White);
+            hand.AddTile(TileType.Green);
+
+            // Second 1 Manzu
+            hand.AddTile(TileType.Man1);
+
+            var waits = calculator.CalculateWaits(hand);
+
+            Assert.AreEqual(1, waits.Count);
+            Assert.That(waits, Does.Contain(TileType.Red));
+        }
+
+        [Test]
+        public void CalculateWaits_KokushiThirteenSidedWait_ReturnsAllThirteenTiles()
+        {
+            var hand = new MahjongHand();
+
+            // 13 уникальных терминальных и почётных тайлов.
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou9);
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.South);
+            hand.AddTile(TileType.West);
+            hand.AddTile(TileType.North);
+            hand.AddTile(TileType.White);
+            hand.AddTile(TileType.Green);
+            hand.AddTile(TileType.Red);
+
+            var calculator = new WaitCalculator();
+
+            var waits = calculator.CalculateWaits(hand);
+
+            Assert.AreEqual(13, waits.Count);
+
+            Assert.That(waits, Does.Contain(TileType.Man1));
+            Assert.That(waits, Does.Contain(TileType.Man9));
+            Assert.That(waits, Does.Contain(TileType.Pin1));
+            Assert.That(waits, Does.Contain(TileType.Pin9));
+            Assert.That(waits, Does.Contain(TileType.Sou1));
+            Assert.That(waits, Does.Contain(TileType.Sou9));
+            Assert.That(waits, Does.Contain(TileType.East));
+            Assert.That(waits, Does.Contain(TileType.South));
+            Assert.That(waits, Does.Contain(TileType.West));
+            Assert.That(waits, Does.Contain(TileType.North));
+            Assert.That(waits, Does.Contain(TileType.White));
+            Assert.That(waits, Does.Contain(TileType.Green));
+            Assert.That(waits, Does.Contain(TileType.Red));
+        }
+        
+        [Test]
+        public void IsWinningHand_KokushiMissingTile_ReturnsFalse()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Pin1);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou9);
+            hand.AddTile(TileType.East);
+            hand.AddTile(TileType.South);
+            hand.AddTile(TileType.West);
+            hand.AddTile(TileType.North);
+            hand.AddTile(TileType.White);
+            hand.AddTile(TileType.Green);
+
+            // Вместо Red добавляем лишний терминальный тайл.
+            hand.AddTile(TileType.Man9);
+
+            var solver = new KokushiSolver();
+
+            Assert.IsFalse(solver.IsWinningHand(hand));
+        }
     }
 }
