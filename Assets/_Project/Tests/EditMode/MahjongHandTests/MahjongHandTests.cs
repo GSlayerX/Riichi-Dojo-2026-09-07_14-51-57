@@ -1542,5 +1542,37 @@ namespace RiichiDojo.Mahjong.Tests
                 checker.IsCorrect(null, selectedTiles),
                 Is.False);
         }
+        
+        [Test]
+        public void AnswerChecker_CorrectSingleTileAnswer_ReturnsTrue()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Red
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Kokushi
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Red
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.True);
+        }
     }
 }
