@@ -1241,5 +1241,41 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.That(result.Waits.Count, Is.EqualTo(1));
             Assert.That(result.Patterns, Does.Contain(HandPattern.Kokushi));
         }
+        
+        [Test]
+        public void HandGenerator_GeneratesQuestionWithRequestedPattern()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion(HandPattern.Chiitoitsu);
+
+            Assert.That(
+                question.Patterns,
+                Does.Contain(HandPattern.Chiitoitsu));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesQuestionWithRequestedKokushiPattern()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion(HandPattern.Kokushi);
+
+            Assert.That(
+                question.Patterns,
+                Does.Contain(HandPattern.Kokushi));
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesQuestionWithRequestedStandardPattern()
+        {
+            var generator = new HandGenerator();
+
+            var question = generator.GenerateQuestion(HandPattern.Standard);
+
+            Assert.That(
+                question.Patterns,
+                Does.Contain(HandPattern.Standard));
+        }
     }
 }

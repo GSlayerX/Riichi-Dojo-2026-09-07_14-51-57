@@ -94,6 +94,18 @@ namespace RiichiDojo.Mahjong
                 result.Patterns);
         }
         
+        public TrainingQuestion GenerateQuestion(HandPattern pattern)
+        {
+            var hand = GenerateHand(pattern);
+
+            var result = _calculator.CalculateWaits(hand);
+
+            return new TrainingQuestion(
+                hand,
+                result.Waits,
+                result.Patterns);
+        }
+        
         private MahjongHand GenerateChiitoitsuHand()
         {
             var hand = new MahjongHand();
