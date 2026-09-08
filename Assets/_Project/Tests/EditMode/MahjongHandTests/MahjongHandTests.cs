@@ -1277,5 +1277,270 @@ namespace RiichiDojo.Mahjong.Tests
                 question.Patterns,
                 Does.Contain(HandPattern.Standard));
         }
+        
+        [Test]
+        public void AnswerChecker_CorrectAnswer_ReturnsTrue()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.True);
+        }
+        
+        [Test]
+        public void AnswerChecker_CorrectAnswerInDifferentOrder_ReturnsTrue()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man3,
+                TileType.Man2
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.True);
+        }
+        
+        [Test]
+        public void AnswerChecker_IncorrectAnswer_ReturnsFalse()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man4
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.False);
+        }
+        
+        [Test]
+        public void AnswerChecker_IncompleteAnswer_ReturnsFalse()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man2
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.False);
+        }
+        
+        [Test]
+        public void AnswerChecker_AnswerWithExtraTile_ReturnsFalse()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3,
+                TileType.Man4
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.False);
+        }
+        
+        [Test]
+        public void AnswerChecker_EmptyAnswer_ReturnsFalse()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>();
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.False);
+        }
+        
+        [Test]
+        public void AnswerChecker_EmptyWaitsAndEmptyAnswer_ReturnsTrue()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>();
+            var patterns = new List<HandPattern>();
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>();
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.True);
+        }
+        
+        [Test]
+        public void AnswerChecker_NullSelectedTiles_ReturnsFalse()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man2,
+                TileType.Man3
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Standard
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            Assert.That(
+                checker.IsCorrect(question, null),
+                Is.False);
+        }
+        
+        [Test]
+        public void AnswerChecker_NullQuestion_ReturnsFalse()
+        {
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man2
+            };
+
+            Assert.That(
+                checker.IsCorrect(null, selectedTiles),
+                Is.False);
+        }
     }
 }
