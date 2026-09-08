@@ -12,18 +12,33 @@ namespace RiichiDojo.Mahjong
         private Image _symbol;
 
         [SerializeField]
-        private TileSpriteDatabase _spriteDatabase;
+        private TileThemeData _theme;
 
-        [SerializeField]
-        private TileTheme _theme = TileTheme.White;
+        private TileType _tile;
 
         public void SetTile(TileType tile)
         {
-            _background.sprite =
-                _spriteDatabase.GetBackground(_theme);
+            _tile = tile;
 
-            _symbol.sprite =
-                _spriteDatabase.GetSprite(tile, _theme);
+            Refresh();
+        }
+
+        public void SetTheme(TileThemeData theme)
+        {
+            _theme = theme;
+
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            if (_theme == null)
+            {
+                return;
+            }
+
+            _background.sprite = _theme.Background;
+            _symbol.sprite = _theme.GetSprite(_tile);
         }
     }
 }

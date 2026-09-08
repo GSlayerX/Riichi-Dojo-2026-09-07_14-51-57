@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 773c466c8f2abab4a82297439ade68fd, type: 3}
+  m_Name: WhiteTheme
+  m_EditorClassIdentifier: RiichiDojo.Mahjong::RiichiDojo.Mahjong.TileThemeData
+  _themeName: White
+  _background: {fileID: 21300000, guid: 5fa100862824d104f99790f995886530, type: 3}
+  _sprites:
+  - {fileID: 21300000, guid: d733c2f511d55fa4daa7191192545ee6, type: 3}
+  - {fileID: 21300000, guid: 8089592ed33ee5b44baf53a2a40010bd, type: 3}
+  - {fileID: 21300000, guid: 5b746a82851540043871976b55f4c466, type: 3}
+  - {fileID: 21300000, guid: 0733d5b9f0e834747ac6fdf3a8365058, type: 3}
+  - {fileID: 21300000, guid: 2171c01177a52d540913711ae7abbea4, type: 3}
+  - {fileID: 21300000, guid: b749f8e00142a24409c69882606dd0d9, type: 3}
+  - {fileID: 21300000, guid: cc2a7ec522d27854dac003a93d5083ce, type: 3}
+  - {fileID: 21300000, guid: c187e3db5c3943b47863f8154a4d4233, type: 3}
+  - {fileID: 21300000, guid: 43db8ab8a20b0a3488779b0b1b48eab0, type: 3}
+  - {fileID: 21300000, guid: a5670dacaff2ae445b26fd0ddf0013c3, type: 3}
+  - {fileID: 21300000, guid: ac02d26986f14c64a90195c1b93adef7, type: 3}
+  - {fileID: 21300000, guid: 5c28f38f70af7574fbb64614d18ccb3e, type: 3}
+  - {fileID: 21300000, guid: 4d232c890abf2144881752fd23657dbe, type: 3}
+  - {fileID: 21300000, guid: eeb8df3259c8d8d48882e84f0fdd959a, type: 3}
+  - {fileID: 21300000, guid: 3df60d80ce4eb4845ad7456cf29d4a24, type: 3}
+  - {fileID: 21300000, guid: 0cce9fa51daf0294595428c036f46d3d, type: 3}
+  - {fileID: 21300000, guid: 185c73556933767439ca467f62d2f39e, type: 3}
+  - {fileID: 21300000, guid: a6759869d91749248866de47708d21b8, type: 3}
+  - {fileID: 21300000, guid: 41df5cd11168772469aff2ebed9e7814, type: 3}
+  - {fileID: 21300000, guid: d4356b715f406a94d97b06a7a15ed518, type: 3}
+  - {fileID: 21300000, guid: 90401c3f68b993745a6c0b841042605c, type: 3}
+  - {fileID: 21300000, guid: 66adbd3b6a99b3847986fc152e6e9bed, type: 3}
+  - {fileID: 21300000, guid: 33c2f857fd805b7438f2665d77d69906, type: 3}
+  - {fileID: 21300000, guid: 9c41db8d33225594cb036dabacd0308b, type: 3}
+  - {fileID: 21300000, guid: 5a0c510281451f74d828b395751a52fa, type: 3}
+  - {fileID: 21300000, guid: 26e3f9a4702dffb47b6eb6f397495342, type: 3}
+  - {fileID: 21300000, guid: 11f98f91c2b757048acad4f95bc084b9, type: 3}
+  - {fileID: 21300000, guid: 48b0c18e60d2e63498108043780e104f, type: 3}
+  - {fileID: 21300000, guid: 4f89f39f9ae0851468782f89f8be73c1, type: 3}
+  - {fileID: 21300000, guid: f7582936d2c84b84ea618e594033e43b, type: 3}
+  - {fileID: 21300000, guid: bdec158a0ee64b64c8979d639809b673, type: 3}
+  - {fileID: 21300000, guid: 12fd787c6a15a1c458a6c591b226ec69, type: 3}
+  - {fileID: 21300000, guid: 65f4cf3f2b711b74187e5c588b3d1f6c, type: 3}
+  - {fileID: 21300000, guid: 74e52b9d85483f5469e7a35cc76599e0, type: 3}
