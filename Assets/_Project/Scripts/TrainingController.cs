@@ -10,6 +10,9 @@ public class TrainingController : MonoBehaviour
     private Transform _handContainer;
 
     [SerializeField]
+    private TileSelectorController _tileSelector;
+    
+    [SerializeField]
     private TileThemeDatabase _themeDatabase;
     
     [SerializeField]
@@ -29,6 +32,8 @@ public class TrainingController : MonoBehaviour
                 $"Tile theme '{_themeName}' was not found.");
             return;
         }
+
+        _tileSelector.Initialize(question.Hand);
 
         foreach (TileType tile in question.Hand.Tiles)
         {
