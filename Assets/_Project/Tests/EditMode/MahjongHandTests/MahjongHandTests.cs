@@ -1574,5 +1574,38 @@ namespace RiichiDojo.Mahjong.Tests
                 checker.IsCorrect(question, selectedTiles),
                 Is.True);
         }
+        
+        [Test]
+        public void HandGenerator_GeneratesValidChiitoitsuStructure()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateHand(HandPattern.Chiitoitsu);
+
+            Assert.AreEqual(13, hand.TileCount);
+
+            int pairCount = 0;
+            int singleCount = 0;
+
+            for (int i = 0; i < 34; i++)
+            {
+                var tile = (TileType)i;
+                int count = hand.GetCount(tile);
+
+                Assert.LessOrEqual(count, 2);
+
+                if (count == 2)
+                {
+                    pairCount++;
+                }
+                else if (count == 1)
+                {
+                    singleCount++;
+                }
+            }
+
+            Assert.AreEqual(6, pairCount);
+            Assert.AreEqual(1, singleCount);
+        }
     }
 }

@@ -22,7 +22,8 @@ namespace RiichiDojo.Mahjong
         private TileThemeData _theme;
 
         private const int MaxSelectedTiles = 13;
-
+        private bool _selectionEnabled = true;
+        
         private readonly Dictionary<TileType, MahjongTileUI> _selectedTiles = new();
         private readonly Dictionary<TileType, MahjongTileButton> _selectedButtons = new();
         private readonly List<MahjongTileUI> _correctAnswerTiles = new();
@@ -32,6 +33,8 @@ namespace RiichiDojo.Mahjong
         
         public void Initialize(MahjongHand hand)
         {
+            _selectionEnabled = true;
+            
             Clear();
 
             foreach (TileType tile in hand.GetAvailableSelectionTiles())
@@ -48,6 +51,11 @@ namespace RiichiDojo.Mahjong
 
         private void OnTileClicked(TileType tile)
         {
+            if (!_selectionEnabled)
+            {
+                return;
+            }
+            
             if (_selectedTiles.TryGetValue(tile, out MahjongTileUI selectedTile))
             {
                 _selectedTiles.Remove(tile);
@@ -104,7 +112,7 @@ namespace RiichiDojo.Mahjong
         
         public void ShowCorrectAnswer(IReadOnlyList<TileType> correctTiles)
         {
-            ClearCorrectAnswer();
+            ClearDisplayedTiles();
 
             foreach (TileType tile in correctTiles)
             {
@@ -122,8 +130,7 @@ namespace RiichiDojo.Mahjong
         
         private void Clear()
         {
-            ClearSelectedTiles();
-            ClearCorrectAnswer();
+            ClearDisplayedTiles();
 
             foreach (Transform child in _container)
             {
@@ -166,6 +173,23 @@ namespace RiichiDojo.Mahjong
             }
 
             return null;
+        }
+        
+        public void SetSelectionEnabled(bool enabled)
+        {
+            _selectionEnabled = enabled;
+        }
+        
+        private void ClearDisplayedTiles()
+        {
+            foreach (Transform child in _selectedTilesContainer)
+            {
+                Destroy(child.gameObject);
+            }
+
+            _selectedTiles.Clear();
+            _selectedButtons.Clear();
+            _correctAnswerTiles.Clear();
         }
     }
 }
