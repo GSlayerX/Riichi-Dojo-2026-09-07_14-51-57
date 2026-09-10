@@ -36,7 +36,9 @@ public class TrainingController : MonoBehaviour
     {
         InitializeTrainingModeDropdown();
 
-        _currentTrainingMode = _trainingModes[0];
+        _trainingModeDropdown.value = 0;
+        _currentTrainingMode = _trainingModes[
+            _trainingModeDropdown.value];
 
         LoadQuestion();
 
