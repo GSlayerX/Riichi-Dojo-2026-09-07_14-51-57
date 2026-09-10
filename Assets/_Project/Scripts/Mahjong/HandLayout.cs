@@ -7,8 +7,9 @@ namespace RiichiDojo.Mahjong
     public class HandLayout : MonoBehaviour
     {
         private const int TileCount = 13;
+        private const float MaxTileWidth = 100f;
         private const float TileAspectRatio = 3f / 4f;
-
+        
         [SerializeField]
         private float _horizontalPadding = 20f;
 
@@ -58,7 +59,9 @@ namespace RiichiDojo.Mahjong
             }
 
             float tileWidth =
-                availableWidth / TileCount;
+                Mathf.Min(
+                    MaxTileWidth,
+                    availableWidth / TileCount);
 
             float tileHeight =
                 tileWidth / TileAspectRatio;

@@ -11,17 +11,23 @@ public class TrainingController : MonoBehaviour
 
     [SerializeField]
     private TileSelectorController _tileSelector;
+
+    [SerializeField]
+    private TMPro.TMP_Text _resultText;
     
     [SerializeField]
     private TileThemeDatabase _themeDatabase;
     
     [SerializeField]
     private string _themeName = "White";
+
+    private TrainingQuestion _currentQuestion;
+    private readonly AnswerChecker _answerChecker = new();
     
     private void Start()
     {
         var generator = new HandGenerator();
-        var question = generator.GenerateQuestion();
+        _currentQuestion = generator.GenerateQuestion();
 
         TileThemeData theme =
             _themeDatabase.GetTheme(_themeName);
@@ -33,15 +39,33 @@ public class TrainingController : MonoBehaviour
             return;
         }
 
-        _tileSelector.Initialize(question.Hand);
+        _tileSelector.Initialize(_currentQuestion.Hand);
 
-        foreach (TileType tile in question.Hand.Tiles)
+        foreach (TileType tile in _currentQuestion.Hand.Tiles)
         {
             MahjongTileUI tileUI =
                 Instantiate(_tilePrefab, _handContainer);
 
             tileUI.SetTile(tile);
             tileUI.SetTheme(theme);
+        }
+    }
+    
+    public void CheckAnswer()
+    {
+        bool isCorrect =
+            _answerChecker.IsCorrect(
+                _currentQuestion,
+                _tileSelector.SelectedTiles);
+
+        if (isCorrect)
+        {
+            _resultText.text = "Correct!";
+        }
+        else
+        {
+            _tileSelector.ShowCorrectAnswer(_currentQuestion.Waits);
+            _resultText.text = "Wrong answer";
         }
     }
 }

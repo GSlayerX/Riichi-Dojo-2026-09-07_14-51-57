@@ -16,6 +16,8 @@ namespace RiichiDojo.Mahjong
 
         private TileType _tile;
 
+        private const float SelectedAlpha = 0.55f;
+        
         public void SetTile(TileType tile)
         {
             _tile = tile;
@@ -39,6 +41,13 @@ namespace RiichiDojo.Mahjong
 
             _background.sprite = _theme.Background;
             _symbol.sprite = _theme.GetSprite(_tile);
+        }
+        
+        public void SetSelected(bool selected)
+        {
+            Color color = _background.color;
+            color.a = selected ? SelectedAlpha : 1f;
+            _background.color = color;
         }
     }
 }

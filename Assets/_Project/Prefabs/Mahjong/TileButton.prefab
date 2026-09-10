@@ -92,6 +92,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8016531665769488725, guid: 51333d5748f60ea44bfe51d83b95c834, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -114,6 +118,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f9fca0661d9b5c44b8e62839f565702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RiichiDojo.Mahjong::RiichiDojo.Mahjong.MahjongTileUI
+--- !u!114 &3724779957193858019 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8016531665769488725, guid: 51333d5748f60ea44bfe51d83b95c834, type: 3}
+  m_PrefabInstance: {fileID: 6697242635302910646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!1 &5339102617686223379 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1650902666598879397, guid: 51333d5748f60ea44bfe51d83b95c834, type: 3}
@@ -159,7 +174,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 3724779957193858019}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
