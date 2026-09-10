@@ -26,6 +26,11 @@ public class TrainingController : MonoBehaviour
     
     private void Start()
     {
+        LoadQuestion();
+    }
+    
+    private void LoadQuestion()
+    {
         var generator = new HandGenerator();
         _currentQuestion = generator.GenerateQuestion();
 
@@ -49,6 +54,8 @@ public class TrainingController : MonoBehaviour
             tileUI.SetTile(tile);
             tileUI.SetTheme(theme);
         }
+
+        _resultText.text = string.Empty;
     }
     
     public void CheckAnswer()
@@ -67,5 +74,15 @@ public class TrainingController : MonoBehaviour
             _tileSelector.ShowCorrectAnswer(_currentQuestion.Waits);
             _resultText.text = "Wrong answer";
         }
+    }
+    
+    public void NextQuestion()
+    {
+        foreach (Transform child in _handContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        LoadQuestion();
     }
 }
