@@ -2,6 +2,7 @@ using NUnit.Framework;
 using RiichiDojo.Mahjong;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace RiichiDojo.Mahjong.Tests
 {
@@ -1606,6 +1607,349 @@ namespace RiichiDojo.Mahjong.Tests
 
             Assert.AreEqual(6, pairCount);
             Assert.AreEqual(1, singleCount);
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesHandWithinWaitRange()
+        {
+            var generator = new HandGenerator();
+
+            var hand = generator.GenerateHand(1, 2);
+
+            var calculator = new WaitCalculator();
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.GreaterOrEqual(result.Waits.Count, 1);
+            Assert.LessOrEqual(result.Waits.Count, 2);
+        }
+        
+        [Test]
+        public void WaitCalculator_Churenpoto_ReturnsNineSidedWait()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man7);
+            hand.AddTile(TileType.Man8);
+
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Man9);
+
+            var calculator = new WaitCalculator();
+
+            var result = calculator.CalculateWaits(hand);
+
+            Assert.AreEqual(9, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man1);
+            CollectionAssert.Contains(result.Waits, TileType.Man2);
+            CollectionAssert.Contains(result.Waits, TileType.Man3);
+            CollectionAssert.Contains(result.Waits, TileType.Man4);
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+            CollectionAssert.Contains(result.Waits, TileType.Man7);
+            CollectionAssert.Contains(result.Waits, TileType.Man8);
+            CollectionAssert.Contains(result.Waits, TileType.Man9);
+
+            CollectionAssert.Contains(result.Patterns, HandPattern.Standard);
+        }
+        
+        [Test]
+        public void WaitCalculator_OneSidedTemplate_ReturnsOneWait()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man8);
+            hand.AddTile(TileType.Man9);
+
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin5);
+            hand.AddTile(TileType.Pin6);
+            hand.AddTile(TileType.Pin7);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Pin9);
+
+            hand.AddTile(TileType.Sou4);
+            hand.AddTile(TileType.Sou4);
+            hand.AddTile(TileType.Sou4);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(1, result.Waits.Count);
+            CollectionAssert.Contains(result.Waits, TileType.Man7);
+        }
+        
+        [Test]
+        public void WaitCalculator_TwoSidedTemplate_ReturnsTwoWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man7);
+            hand.AddTile(TileType.Man8);
+
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin5);
+            hand.AddTile(TileType.Pin6);
+            hand.AddTile(TileType.Pin7);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Pin9);
+
+            hand.AddTile(TileType.Sou4);
+            hand.AddTile(TileType.Sou4);
+            hand.AddTile(TileType.Sou4);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(2, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+            CollectionAssert.Contains(result.Waits, TileType.Man9);
+        }
+        
+        [Test]
+        public void WaitCalculator_ThreeSidedTemplate_ReturnsThreeWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man7);
+            hand.AddTile(TileType.Man8);
+            hand.AddTile(TileType.Man9);
+
+            hand.AddTile(TileType.Pin4);
+            hand.AddTile(TileType.Pin5);
+            hand.AddTile(TileType.Pin6);
+            hand.AddTile(TileType.Pin7);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Pin9);
+            hand.AddTile(TileType.Pin9);
+
+            hand.AddTile(TileType.Sou4);
+            hand.AddTile(TileType.Sou4);
+            hand.AddTile(TileType.Sou4);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(3, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Pin4);
+            CollectionAssert.Contains(result.Waits, TileType.Pin7);
+            CollectionAssert.Contains(result.Waits, TileType.Pin8);
+        }
+        
+        [Test]
+        public void WaitCalculator_FourSidedTemplate_ReturnsFourWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man7);
+
+            hand.AddTile(TileType.Pin7);
+            hand.AddTile(TileType.Pin8);
+            hand.AddTile(TileType.Pin9);
+
+            hand.AddTile(TileType.Sou3);
+            hand.AddTile(TileType.Sou3);
+            hand.AddTile(TileType.Sou3);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(4, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man2);
+            CollectionAssert.Contains(result.Waits, TileType.Man3);
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man8);
+        }
+        
+        [Test]
+        public void WaitCalculator_FiveSidedTemplate_ReturnsFiveWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man4);
+
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man6);
+
+            hand.AddTile(TileType.Man7);
+
+            hand.AddTile(TileType.Man8);
+            hand.AddTile(TileType.Man8);
+            hand.AddTile(TileType.Man8);
+
+            hand.AddTile(TileType.Red);
+            hand.AddTile(TileType.Red);
+            hand.AddTile(TileType.Red);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(5, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+            CollectionAssert.Contains(result.Waits, TileType.Man7);
+            CollectionAssert.Contains(result.Waits, TileType.Man8);
+            CollectionAssert.Contains(result.Waits, TileType.Man9);
+        }
+        
+        [Test]
+        public void WaitCalculator_SixSidedTemplate_ReturnsSixWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man6);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(6, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man1);
+            CollectionAssert.Contains(result.Waits, TileType.Man2);
+            CollectionAssert.Contains(result.Waits, TileType.Man3);
+            CollectionAssert.Contains(result.Waits, TileType.Man4);
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+        }
+        
+        [Test]
+        public void WaitCalculator_SevenSidedTemplate_ReturnsSevenWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+            hand.AddTile(TileType.Sou3);
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man6);
+
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man6);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(7, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man1);
+            CollectionAssert.Contains(result.Waits, TileType.Man2);
+            CollectionAssert.Contains(result.Waits, TileType.Man3);
+            CollectionAssert.Contains(result.Waits, TileType.Man4);
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+            CollectionAssert.Contains(result.Waits, TileType.Man7);
+        }
+        
+        [Test]
+        public void WaitCalculator_EightSidedTemplate_ReturnsEightWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Sou1);
+            hand.AddTile(TileType.Sou2);
+            hand.AddTile(TileType.Sou3);
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man2);
+
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man7);
+
+            hand.AddTile(TileType.Man7);
+            hand.AddTile(TileType.Man7);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(8, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man1);
+            CollectionAssert.Contains(result.Waits, TileType.Man2);
+            CollectionAssert.Contains(result.Waits, TileType.Man3);
+            CollectionAssert.Contains(result.Waits, TileType.Man4);
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+            CollectionAssert.Contains(result.Waits, TileType.Man7);
+            CollectionAssert.Contains(result.Waits, TileType.Man8);
+        }
+        
+        [Test]
+        public void WaitCalculator_NineSidedTemplate_ReturnsNineWaits()
+        {
+            var hand = new MahjongHand();
+
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+            hand.AddTile(TileType.Man1);
+
+            hand.AddTile(TileType.Man2);
+            hand.AddTile(TileType.Man3);
+            hand.AddTile(TileType.Man4);
+            hand.AddTile(TileType.Man5);
+            hand.AddTile(TileType.Man6);
+            hand.AddTile(TileType.Man7);
+            hand.AddTile(TileType.Man8);
+            hand.AddTile(TileType.Man9);
+
+            hand.AddTile(TileType.Man9);
+            hand.AddTile(TileType.Man9);
+
+            var result = new WaitCalculator().CalculateWaits(hand);
+
+            Assert.AreEqual(9, result.Waits.Count);
+
+            CollectionAssert.Contains(result.Waits, TileType.Man1);
+            CollectionAssert.Contains(result.Waits, TileType.Man2);
+            CollectionAssert.Contains(result.Waits, TileType.Man3);
+            CollectionAssert.Contains(result.Waits, TileType.Man4);
+            CollectionAssert.Contains(result.Waits, TileType.Man5);
+            CollectionAssert.Contains(result.Waits, TileType.Man6);
+            CollectionAssert.Contains(result.Waits, TileType.Man7);
+            CollectionAssert.Contains(result.Waits, TileType.Man8);
+            CollectionAssert.Contains(result.Waits, TileType.Man9);
         }
     }
 }

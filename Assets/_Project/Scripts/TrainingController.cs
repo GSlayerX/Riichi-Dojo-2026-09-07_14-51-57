@@ -17,33 +17,44 @@ public class TrainingController : MonoBehaviour
     private TMPro.TMP_Text _resultText;
 
     [SerializeField]
-    private TMP_Dropdown _trainingModeDropdown;
-    
-    [SerializeField]
     private TileThemeDatabase _themeDatabase;
     
     [SerializeField]
     private string _themeName = "White";
 
     [SerializeField]
+    private TMP_Dropdown _trainingModeDropdown;
+
+    [SerializeField]
     private TrainingModeData[] _trainingModes;
+
+    [SerializeField]
+    private TMP_Dropdown _trainingDifficultyDropdown;
+
+    [SerializeField]
+    private TrainingDifficultyData[] _trainingDifficulties;
     
-    private TrainingModeData _currentTrainingMode;
     private TrainingQuestion _currentQuestion;
+    private TrainingModeData _currentTrainingMode;
+    private TrainingDifficultyData _currentTrainingDifficulty;
     private readonly AnswerChecker _answerChecker = new();
     
     private void Start()
     {
         InitializeTrainingModeDropdown();
-
+        InitializeTrainingDifficultyDropdown();
+        
         _trainingModeDropdown.value = 0;
         _currentTrainingMode = _trainingModes[
             _trainingModeDropdown.value];
+        _currentTrainingDifficulty = _trainingDifficulties[0];
 
         LoadQuestion();
 
         _trainingModeDropdown.onValueChanged.AddListener(
             OnTrainingModeChanged);
+        _trainingDifficultyDropdown.onValueChanged.AddListener(
+            OnTrainingDifficultyChanged);
     }
     
     private void InitializeTrainingModeDropdown()
@@ -67,7 +78,10 @@ public class TrainingController : MonoBehaviour
 
         if (_currentTrainingMode.IsAll)
         {
-            _currentQuestion = generator.GenerateQuestion();
+            _currentQuestion =
+                generator.GenerateQuestion(
+                    _currentTrainingDifficulty.MinWaits,
+                    _currentTrainingDifficulty.MaxWaits);
         }
         else
         {
@@ -133,6 +147,29 @@ public class TrainingController : MonoBehaviour
     private void OnTrainingModeChanged(int value)
     {
         _currentTrainingMode = _trainingModes[value];
+
+        NextQuestion();
+    }
+    
+    private void InitializeTrainingDifficultyDropdown()
+    {
+        _trainingDifficultyDropdown.ClearOptions();
+
+        var options =
+            new System.Collections.Generic.List<string>();
+
+        foreach (TrainingDifficultyData difficulty in _trainingDifficulties)
+        {
+            options.Add(difficulty.DisplayName);
+        }
+
+        _trainingDifficultyDropdown.AddOptions(options);
+    }
+    
+    private void OnTrainingDifficultyChanged(int value)
+    {
+        _currentTrainingDifficulty =
+            _trainingDifficulties[value];
 
         NextQuestion();
     }
