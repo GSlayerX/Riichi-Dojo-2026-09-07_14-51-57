@@ -20,7 +20,27 @@ namespace RiichiDojo.Mahjong
         public MahjongHand GenerateHand(
             HandGenerationSettings settings)
         {
-            return GenerateRandomStandardTenpaiHand(settings);
+            HandGenerationType generationType =
+                SelectHandGenerationType(settings);
+
+            switch (generationType)
+            {
+                case HandGenerationType.Standard:
+                    return GenerateRandomStandardTenpaiHand(settings);
+
+                case HandGenerationType.Chiitoitsu:
+                    return GenerateRandomChiitoitsuHand();
+
+                case HandGenerationType.Kokushi:
+                    return GenerateRandomKokushiHand();
+
+                case HandGenerationType.Churenpoto:
+                    return GenerateChurenpotoHand();
+
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported hand generation type: {generationType}");
+            }
         }
         
         public HandGenerator(WaitCalculator calculator)
@@ -40,13 +60,21 @@ namespace RiichiDojo.Mahjong
                 return GenerateRandomKokushiHand();
             }
 
+            if (pattern == HandPattern.Churenpoto)
+            {
+                return GenerateChurenpotoHand();
+            }
+            
             var settings =
                 new HandGenerationSettings(
                     numberOfSuits: 3,
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             return GenerateHand(settings);
         }
@@ -397,6 +425,46 @@ namespace RiichiDojo.Mahjong
             }
 
             return HonorConfiguration.WindsAndDragons;
+        }
+        
+        private HandGenerationType SelectHandGenerationType(
+            HandGenerationSettings settings)
+        {
+            int specialWeight =
+                settings.ChiitoitsuWeight +
+                settings.KokushiWeight +
+                settings.ChurenpotoWeight;
+
+            int standardWeight = 100 - specialWeight;
+
+            if (standardWeight < 0)
+            {
+                throw new InvalidOperationException(
+                    "Special hand weights cannot exceed 100.");
+            }
+
+            int roll = _random.Next(100);
+
+            if (roll < standardWeight)
+            {
+                return HandGenerationType.Standard;
+            }
+
+            roll -= standardWeight;
+
+            if (roll < settings.ChiitoitsuWeight)
+            {
+                return HandGenerationType.Chiitoitsu;
+            }
+
+            roll -= settings.ChiitoitsuWeight;
+
+            if (roll < settings.KokushiWeight)
+            {
+                return HandGenerationType.Kokushi;
+            }
+
+            return HandGenerationType.Churenpoto;
         }
         
         private bool MatchesGenerationSettings(

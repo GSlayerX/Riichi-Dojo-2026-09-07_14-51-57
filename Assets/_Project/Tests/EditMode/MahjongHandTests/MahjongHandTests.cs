@@ -747,7 +747,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var hand = generator.GenerateHand(settings);
 
@@ -765,7 +768,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var hand = generator.GenerateHand(settings);
 
@@ -790,7 +796,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var hand1 = generator.GenerateHand(settings);
             var hand2 = generator.GenerateHand(settings);
@@ -811,7 +820,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var hand = generator.GenerateHand(settings);
 
@@ -833,7 +845,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var hand = generator.GenerateHand(settings);
             var result = calculator.CalculateWaits(hand);
@@ -853,7 +868,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var hand = generator.GenerateHand(settings);
             var result = calculator.CalculateWaits(hand);
@@ -900,7 +918,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var question =
                 generator.GenerateQuestion(settings);
@@ -923,7 +944,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var question1 =
                 generator.GenerateQuestion(settings);
@@ -947,7 +971,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var question =
                 generator.GenerateQuestion(settings);
@@ -980,7 +1007,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -1003,7 +1033,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var question =
                 generator.GenerateQuestion(settings);
@@ -1224,7 +1257,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var question =
                 generator.GenerateQuestion(settings);
@@ -1245,7 +1281,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var question =
                 generator.GenerateQuestion(settings);
@@ -2058,6 +2097,166 @@ namespace RiichiDojo.Mahjong.Tests
             CollectionAssert.Contains(result.Waits, TileType.Man7);
             CollectionAssert.Contains(result.Waits, TileType.Man8);
             CollectionAssert.Contains(result.Waits, TileType.Man9);
+        }
+        
+        [Test]
+        public void GenerateHand_ChiitoitsuWeight100_GeneratesChiitoitsu()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 0,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 100,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Chiitoitsu));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_KokushiWeight100_GeneratesKokushi()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 0,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 100,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Kokushi));
+            }
+        }
+        
+        [Test]
+        public void AnswerChecker_ChurenpotoNineSidedWait_AcceptsAllNineTiles()
+        {
+            var hand = new MahjongHand();
+
+            var waits = new List<TileType>
+            {
+                TileType.Man1,
+                TileType.Man2,
+                TileType.Man3,
+                TileType.Man4,
+                TileType.Man5,
+                TileType.Man6,
+                TileType.Man7,
+                TileType.Man8,
+                TileType.Man9
+            };
+
+            var patterns = new List<HandPattern>
+            {
+                HandPattern.Churenpoto
+            };
+
+            var question = new TrainingQuestion(
+                hand,
+                waits,
+                patterns);
+
+            var checker = new AnswerChecker();
+
+            var selectedTiles = new List<TileType>
+            {
+                TileType.Man1,
+                TileType.Man2,
+                TileType.Man3,
+                TileType.Man4,
+                TileType.Man5,
+                TileType.Man6,
+                TileType.Man7,
+                TileType.Man8,
+                TileType.Man9
+            };
+
+            Assert.That(
+                checker.IsCorrect(question, selectedTiles),
+                Is.True);
+        }
+        
+        [Test]
+        public void HandGenerator_GeneratesQuestionWithRequestedChurenpotoPattern()
+        {
+            var generator = new HandGenerator();
+
+            var question =
+                generator.GenerateQuestion(HandPattern.Churenpoto);
+
+            Assert.That(
+                question.Hand.TileCount,
+                Is.EqualTo(13));
+
+            Assert.That(
+                question.Waits.Count,
+                Is.GreaterThan(0));
+
+            Assert.That(
+                question.Patterns,
+                Does.Contain(HandPattern.Churenpoto));
+        }
+        
+        [Test]
+        public void HandGenerator_GenerateQuestion_ChurenpotoWeight100_GeneratesChurenpoto()
+        {
+            var settings = new HandGenerationSettings(
+                numberOfSuits: 1,
+                noHonorsWeight: 100,
+                windsWeight: 0,
+                dragonsWeight: 0,
+                windsAndDragonsWeight: 0,
+                chiitoitsuWeight: 0,
+                kokushiWeight: 0,
+                churenpotoWeight: 100);
+
+            var generator = new HandGenerator();
+
+            var question =
+                generator.GenerateQuestion(settings);
+
+            Assert.That(
+                question.Hand.TileCount,
+                Is.EqualTo(13));
+
+            Assert.That(
+                question.Waits.Count,
+                Is.GreaterThan(0));
+
+            Assert.That(
+                question.Patterns,
+                Does.Contain(HandPattern.Churenpoto));
         }
     }
 }

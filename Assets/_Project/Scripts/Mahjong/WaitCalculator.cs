@@ -9,12 +9,14 @@ namespace RiichiDojo.Mahjong
         private readonly StandardHandSolver _standardHandSolver;
         private readonly ChiitoitsuSolver _chiitoitsuSolver;
         private readonly KokushiSolver _kokushiSolver;
+        private readonly ChurenpotoSolver _churenpotoSolver;
 
         public WaitCalculator()
         {
             _standardHandSolver = new StandardHandSolver();
             _chiitoitsuSolver = new ChiitoitsuSolver();
             _kokushiSolver = new KokushiSolver();
+            _churenpotoSolver = new ChurenpotoSolver();
         }
 
         public WaitResult CalculateWaits(MahjongHand hand)
@@ -58,6 +60,11 @@ namespace RiichiDojo.Mahjong
                     patterns.Add(HandPattern.Kokushi);
                 }
 
+                if (_churenpotoSolver.IsWinningHand(hand))
+                {
+                    patterns.Add(HandPattern.Churenpoto);
+                }
+                
                 if (patterns.Count > 0)
                 {
                     waits.Add(candidate);

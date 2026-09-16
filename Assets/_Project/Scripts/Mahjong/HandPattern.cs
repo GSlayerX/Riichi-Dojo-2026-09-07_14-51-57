@@ -4,6 +4,7 @@ namespace RiichiDojo.Mahjong
     {
         Standard,
         Chiitoitsu,
-        Kokushi
+        Kokushi,
+        Churenpoto
     }
 }

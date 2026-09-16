@@ -18,3 +18,6 @@ MonoBehaviour:
   _windsWeight: 5
   _dragonsWeight: 5
   _windsAndDragonsWeight: 5
+  _chiitoitsuWeight: 0
+  _kokushiWeight: 0
+  _churenpotoWeight: 4

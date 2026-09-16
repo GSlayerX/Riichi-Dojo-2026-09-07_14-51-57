@@ -14,7 +14,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -83,7 +86,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -107,7 +113,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -131,7 +140,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 100,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -159,7 +171,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 0,
                     windsWeight: 100,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -187,7 +202,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 0,
                     windsWeight: 0,
                     dragonsWeight: 100,
-                    windsAndDragonsWeight: 0);
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 
@@ -215,7 +233,10 @@ namespace RiichiDojo.Mahjong.Tests
                     noHonorsWeight: 0,
                     windsWeight: 0,
                     dragonsWeight: 0,
-                    windsAndDragonsWeight: 100);
+                    windsAndDragonsWeight: 100,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
 
             var generator = new HandGenerator();
 

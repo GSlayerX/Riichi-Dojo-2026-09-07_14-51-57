@@ -31,6 +31,20 @@ public class TrainingDifficultyData : ScriptableObject
     [Min(0)]
     private int _windsAndDragonsWeight;
 
+    [Header("Special Hand Weights")]
+
+    [SerializeField]
+    [Min(0)]
+    private int _chiitoitsuWeight;
+
+    [SerializeField]
+    [Min(0)]
+    private int _kokushiWeight;
+
+    [SerializeField]
+    [Min(0)]
+    private int _churenpotoWeight;
+    
     public string DisplayName => _displayName;
 
     public int NumberOfSuits => _numberOfSuits;
@@ -41,8 +55,14 @@ public class TrainingDifficultyData : ScriptableObject
 
     public int DragonsWeight => _dragonsWeight;
 
-    public int WindsAndDragonsWeight =>
-        _windsAndDragonsWeight;
+    public int WindsAndDragonsWeight => _windsAndDragonsWeight;
+    
+    public int ChiitoitsuWeight => _chiitoitsuWeight;
+
+    public int KokushiWeight => _kokushiWeight;
+
+    public int ChurenpotoWeight =>
+        _churenpotoWeight;
     
     public HandGenerationSettings GetGenerationSettings()
     {
@@ -51,6 +71,9 @@ public class TrainingDifficultyData : ScriptableObject
             _noHonorsWeight,
             _windsWeight,
             _dragonsWeight,
-            _windsAndDragonsWeight);
+            _windsAndDragonsWeight,
+            _chiitoitsuWeight,
+            _kokushiWeight,
+            _churenpotoWeight);
     }
 }
