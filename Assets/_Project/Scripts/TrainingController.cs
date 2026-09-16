@@ -14,7 +14,7 @@ public class TrainingController : MonoBehaviour
     private TileSelectorController _tileSelector;
 
     [SerializeField]
-    private TMPro.TMP_Text _resultText;
+    private TMP_Text _resultText;
 
     [SerializeField]
     private TileThemeDatabase _themeDatabase;

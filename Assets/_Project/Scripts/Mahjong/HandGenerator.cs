@@ -28,11 +28,6 @@ namespace RiichiDojo.Mahjong
             _calculator = calculator;
         }
 
-        public MahjongHand GenerateHand()
-        {
-            return GenerateHand(1, 9);
-        }
-
         public MahjongHand GenerateHand(HandPattern pattern)
         {
             if (pattern == HandPattern.Chiitoitsu)
@@ -45,72 +40,15 @@ namespace RiichiDojo.Mahjong
                 return GenerateRandomKokushiHand();
             }
 
-            return GenerateHand(1, 9);
-        }
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
 
-        public MahjongHand GenerateHand(
-            int minWaits,
-            int maxWaits)
-        {
-            while (true)
-            {
-                MahjongHand hand;
-
-                if (minWaits >= 6 && maxWaits >= 9)
-                {
-                    if (_random.NextDouble() < 0.2)
-                    {
-                        hand = GenerateChurenpotoHand();
-                    }
-                    else
-                    {
-                        hand = GenerateRandomStandardTenpaiHand();
-                    }
-                }
-                else
-                {
-                    hand = GenerateRandomStandardTenpaiHand();
-                }
-
-                var result = _calculator.CalculateWaits(hand);
-
-                if (!result.Patterns.Contains(HandPattern.Standard))
-                {
-                    continue;
-                }
-
-                if (result.Waits.Count >= minWaits &&
-                    result.Waits.Count <= maxWaits)
-                {
-                    return hand;
-                }
-            }
-        }
-
-        public TrainingQuestion GenerateQuestion()
-        {
-            var hand = GenerateHand();
-
-            var result = _calculator.CalculateWaits(hand);
-
-            return new TrainingQuestion(
-                hand,
-                result.Waits,
-                result.Patterns);
-        }
-
-        public TrainingQuestion GenerateQuestion(
-            int minWaits,
-            int maxWaits)
-        {
-            var hand = GenerateHand(minWaits, maxWaits);
-
-            var result = _calculator.CalculateWaits(hand);
-
-            return new TrainingQuestion(
-                hand,
-                result.Waits,
-                result.Patterns);
+            return GenerateHand(settings);
         }
 
         public TrainingQuestion GenerateQuestion(HandPattern pattern)
@@ -137,18 +75,7 @@ namespace RiichiDojo.Mahjong
                 result.Waits,
                 result.Patterns);
         }
-        
-        private MahjongHand GenerateRandomStandardTenpaiHand()
-        {
-            return GenerateRandomStandardTenpaiHand(
-                new HandGenerationSettings(
-                    3,
-                    100,
-                    0,
-                    0,
-                    0));
-        }
-        
+
         private MahjongHand GenerateRandomStandardTenpaiHand(
             HandGenerationSettings settings)
         {
@@ -198,52 +125,6 @@ namespace RiichiDojo.Mahjong
                 return winningHand;
             }
         }
-
-        /*private MahjongHand GenerateRandomWinningStandardHand()
-        {
-            while (true)
-            {
-                var hand = new MahjongHand();
-
-                var usedCounts = new int[TileTypeCount];
-
-                TileType pair = GetRandomTileWithAvailableCopies(
-                    usedCounts,
-                    2);
-
-                AddTile(hand, usedCounts, pair);
-                AddTile(hand, usedCounts, pair);
-
-                for (int i = 0; i < 4; i++)
-                {
-                    if (_random.NextDouble() < 0.5)
-                    {
-                        TileType triplet =
-                            GetRandomTileWithAvailableCopies(
-                                usedCounts,
-                                3);
-
-                        AddTile(hand, usedCounts, triplet);
-                        AddTile(hand, usedCounts, triplet);
-                        AddTile(hand, usedCounts, triplet);
-                    }
-                    else
-                    {
-                        if (!TryAddRandomSequence(
-                                hand,
-                                usedCounts))
-                        {
-                            i--;
-                        }
-                    }
-                }
-
-                if (hand.TileCount == 14)
-                {
-                    return hand;
-                }
-            }
-        }*/
         
         private MahjongHand GenerateRandomWinningStandardHand(
             List<int> selectedSuits,
@@ -330,23 +211,6 @@ namespace RiichiDojo.Mahjong
             return true;
         }
 
-        private TileType GetRandomTileWithAvailableCopies(
-            int[] usedCounts,
-            int requiredCopies)
-        {
-            while (true)
-            {
-                TileType tile =
-                    (TileType)_random.Next(TileTypeCount);
-
-                if (usedCounts[(int)tile] +
-                    requiredCopies <= 4)
-                {
-                    return tile;
-                }
-            }
-        }
-
         private void AddTile(
             MahjongHand hand,
             int[] usedCounts,
@@ -375,33 +239,6 @@ namespace RiichiDojo.Mahjong
             hand.AddTile(TileType.Man9);
             hand.AddTile(TileType.Man9);
             hand.AddTile(TileType.Man9);
-
-            return hand;
-        }
-
-        private MahjongHand GenerateChiitoitsuHand()
-        {
-            var hand = new MahjongHand();
-
-            hand.AddTile(TileType.Man1);
-            hand.AddTile(TileType.Man1);
-
-            hand.AddTile(TileType.Man2);
-            hand.AddTile(TileType.Man2);
-
-            hand.AddTile(TileType.Pin3);
-            hand.AddTile(TileType.Pin3);
-
-            hand.AddTile(TileType.Pin5);
-            hand.AddTile(TileType.Pin5);
-
-            hand.AddTile(TileType.Sou4);
-            hand.AddTile(TileType.Sou4);
-
-            hand.AddTile(TileType.East);
-            hand.AddTile(TileType.East);
-
-            hand.AddTile(TileType.Red);
 
             return hand;
         }

@@ -741,7 +741,15 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var hand = generator.GenerateHand();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var hand = generator.GenerateHand(settings);
 
             Assert.AreEqual(13, hand.TileCount);
         }
@@ -751,13 +759,23 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var hand = generator.GenerateHand();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var hand = generator.GenerateHand(settings);
 
             for (int i = 0; i < 34; i++)
             {
                 var tile = (TileType)i;
 
-                Assert.LessOrEqual(hand.GetCount(tile), 4);
+                Assert.LessOrEqual(
+                    hand.GetCount(tile),
+                    4);
             }
         }
         
@@ -766,8 +784,16 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var hand1 = generator.GenerateHand();
-            var hand2 = generator.GenerateHand();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var hand1 = generator.GenerateHand(settings);
+            var hand2 = generator.GenerateHand(settings);
 
             Assert.IsFalse(
                 hand1.Tiles.SequenceEqual(hand2.Tiles));
@@ -779,7 +805,15 @@ namespace RiichiDojo.Mahjong.Tests
             var generator = new HandGenerator();
             var calculator = new WaitCalculator();
 
-            var hand = generator.GenerateHand();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var hand = generator.GenerateHand(settings);
 
             var result = calculator.CalculateWaits(hand);
 
@@ -793,7 +827,15 @@ namespace RiichiDojo.Mahjong.Tests
             var generator = new HandGenerator();
             var calculator = new WaitCalculator();
 
-            var hand = generator.GenerateHand();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var hand = generator.GenerateHand(settings);
             var result = calculator.CalculateWaits(hand);
 
             Assert.IsNotEmpty(result.Waits);
@@ -805,7 +847,15 @@ namespace RiichiDojo.Mahjong.Tests
             var generator = new HandGenerator();
             var calculator = new WaitCalculator();
 
-            var hand = generator.GenerateHand();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var hand = generator.GenerateHand(settings);
             var result = calculator.CalculateWaits(hand);
 
             Assert.GreaterOrEqual(result.Waits.Count, 1);
@@ -844,7 +894,16 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var question = generator.GenerateQuestion();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var question =
+                generator.GenerateQuestion(settings);
 
             Assert.IsNotNull(question);
             Assert.IsNotNull(question.Hand);
@@ -858,11 +917,23 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var question1 = generator.GenerateQuestion();
-            var question2 = generator.GenerateQuestion();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var question1 =
+                generator.GenerateQuestion(settings);
+
+            var question2 =
+                generator.GenerateQuestion(settings);
 
             Assert.IsFalse(
-                question1.Hand.Tiles.SequenceEqual(question2.Hand.Tiles));
+                question1.Hand.Tiles.SequenceEqual(
+                    question2.Hand.Tiles));
         }
         
         [Test]
@@ -870,7 +941,16 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var question = generator.GenerateQuestion();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var question =
+                generator.GenerateQuestion(settings);
 
             var calculator = new WaitCalculator();
             var result = calculator.CalculateWaits(question.Hand);
@@ -881,18 +961,31 @@ namespace RiichiDojo.Mahjong.Tests
 
             foreach (var wait in result.Waits)
             {
-                Assert.That(question.Waits, Does.Contain(wait));
+                Assert.That(
+                    question.Waits,
+                    Does.Contain(wait));
             }
-            
-            Assert.That(question.Patterns.Count, Is.GreaterThan(0));
+
+            Assert.That(
+                question.Patterns.Count,
+                Is.GreaterThan(0));
         }
         
         [Test]
         public void HandGenerator_GenerateQuestion_HasAtLeastOneWait()
         {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
             var generator = new HandGenerator();
 
-            var question = generator.GenerateQuestion();
+            var question =
+                generator.GenerateQuestion(settings);
 
             Assert.IsNotEmpty(question.Waits);
         }
@@ -904,7 +997,16 @@ namespace RiichiDojo.Mahjong.Tests
 
             var generator = new HandGenerator(calculator);
 
-            var question = generator.GenerateQuestion();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var question =
+                generator.GenerateQuestion(settings);
 
             Assert.IsNotNull(question);
             Assert.IsNotEmpty(question.Waits);
@@ -1116,21 +1218,41 @@ namespace RiichiDojo.Mahjong.Tests
         {
             var generator = new HandGenerator();
 
-            var question = generator.GenerateQuestion();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
+
+            var question =
+                generator.GenerateQuestion(settings);
 
             Assert.That(
                 question.Waits.Count,
                 Is.GreaterThan(0));
         }
-        
+
         [Test]
         public void HandGenerator_GeneratedQuestion_HasPattern()
         {
             var generator = new HandGenerator();
 
-            var question = generator.GenerateQuestion();
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0);
 
-            Assert.That(question.Patterns.Count, Is.GreaterThan(0));
+            var question =
+                generator.GenerateQuestion(settings);
+
+            Assert.That(
+                question.Patterns.Count,
+                Is.GreaterThan(0));
         }
 
         [Test]
@@ -1607,20 +1729,6 @@ namespace RiichiDojo.Mahjong.Tests
 
             Assert.AreEqual(6, pairCount);
             Assert.AreEqual(1, singleCount);
-        }
-        
-        [Test]
-        public void HandGenerator_GeneratesHandWithinWaitRange()
-        {
-            var generator = new HandGenerator();
-
-            var hand = generator.GenerateHand(1, 2);
-
-            var calculator = new WaitCalculator();
-            var result = calculator.CalculateWaits(hand);
-
-            Assert.GreaterOrEqual(result.Waits.Count, 1);
-            Assert.LessOrEqual(result.Waits.Count, 2);
         }
         
         [Test]
