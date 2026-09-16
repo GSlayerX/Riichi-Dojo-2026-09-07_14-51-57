@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: EasyTrainingDifficulty
   m_EditorClassIdentifier: Assembly-CSharp::TrainingDifficultyData
   _displayName: Easy
-  _minWaits: 1
-  _maxWaits: 2
+  _numberOfSuits: 3
+  _noHonorsWeight: 60
+  _windsWeight: 15
+  _dragonsWeight: 15
+  _windsAndDragonsWeight: 10

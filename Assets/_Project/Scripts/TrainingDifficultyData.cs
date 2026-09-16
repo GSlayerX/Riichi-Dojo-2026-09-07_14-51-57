@@ -1,4 +1,5 @@
 using UnityEngine;
+using RiichiDojo.Mahjong;
 
 [CreateAssetMenu(
     fileName = "TrainingDifficulty",
@@ -9,14 +10,47 @@ public class TrainingDifficultyData : ScriptableObject
     private string _displayName;
 
     [SerializeField]
-    private int _minWaits;
+    [Min(1)]
+    private int _numberOfSuits;
+
+    [Header("Honor Weights")]
 
     [SerializeField]
-    private int _maxWaits;
+    [Min(0)]
+    private int _noHonorsWeight;
+
+    [SerializeField]
+    [Min(0)]
+    private int _windsWeight;
+
+    [SerializeField]
+    [Min(0)]
+    private int _dragonsWeight;
+
+    [SerializeField]
+    [Min(0)]
+    private int _windsAndDragonsWeight;
 
     public string DisplayName => _displayName;
 
-    public int MinWaits => _minWaits;
+    public int NumberOfSuits => _numberOfSuits;
 
-    public int MaxWaits => _maxWaits;
+    public int NoHonorsWeight => _noHonorsWeight;
+
+    public int WindsWeight => _windsWeight;
+
+    public int DragonsWeight => _dragonsWeight;
+
+    public int WindsAndDragonsWeight =>
+        _windsAndDragonsWeight;
+    
+    public HandGenerationSettings GetGenerationSettings()
+    {
+        return new HandGenerationSettings(
+            _numberOfSuits,
+            _noHonorsWeight,
+            _windsWeight,
+            _dragonsWeight,
+            _windsAndDragonsWeight);
+    }
 }

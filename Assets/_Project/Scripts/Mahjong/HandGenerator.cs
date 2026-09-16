@@ -17,6 +17,12 @@ namespace RiichiDojo.Mahjong
             _calculator = new WaitCalculator();
         }
 
+        public MahjongHand GenerateHand(
+            HandGenerationSettings settings)
+        {
+            return GenerateRandomStandardTenpaiHand(settings);
+        }
+        
         public HandGenerator(WaitCalculator calculator)
         {
             _calculator = calculator;
@@ -119,27 +125,81 @@ namespace RiichiDojo.Mahjong
                 result.Patterns);
         }
 
+        public TrainingQuestion GenerateQuestion(
+            HandGenerationSettings settings)
+        {
+            var hand = GenerateHand(settings);
+
+            var result = _calculator.CalculateWaits(hand);
+
+            return new TrainingQuestion(
+                hand,
+                result.Waits,
+                result.Patterns);
+        }
+        
         private MahjongHand GenerateRandomStandardTenpaiHand()
+        {
+            return GenerateRandomStandardTenpaiHand(
+                new HandGenerationSettings(
+                    3,
+                    100,
+                    0,
+                    0,
+                    0));
+        }
+        
+        private MahjongHand GenerateRandomStandardTenpaiHand(
+            HandGenerationSettings settings)
         {
             while (true)
             {
-                var winningHand = GenerateRandomWinningStandardHand();
+                var selectedSuits =
+                    SelectSuits(settings.NumberOfSuits);
 
-                int tileIndex = _random.Next(winningHand.TileCount);
+                HonorConfiguration honorConfiguration =
+                    SelectHonorConfiguration(settings);
+
+                MahjongHand winningHand =
+                    GenerateRandomWinningStandardHand(
+                        selectedSuits,
+                        honorConfiguration);
+
+                int tileIndex =
+                    _random.Next(winningHand.TileCount);
 
                 TileType removedTile =
                     winningHand.Tiles[tileIndex];
 
                 winningHand.RemoveTile(removedTile);
 
-                if (winningHand.TileCount == HandSize)
+                if (winningHand.TileCount != HandSize)
                 {
-                    return winningHand;
+                    continue;
                 }
+
+                if (!MatchesGenerationSettings(
+                        winningHand,
+                        selectedSuits,
+                        honorConfiguration))
+                {
+                    continue;
+                }
+
+                var result =
+                    _calculator.CalculateWaits(winningHand);
+
+                if (!result.Patterns.Contains(
+                        HandPattern.Standard))
+                {
+                    continue;
+                }
+
+                return winningHand;
             }
         }
 
-        private MahjongHand GenerateRandomWinningStandardHand()
+        /*private MahjongHand GenerateRandomWinningStandardHand()
         {
             while (true)
             {
@@ -183,13 +243,73 @@ namespace RiichiDojo.Mahjong
                     return hand;
                 }
             }
+        }*/
+        
+        private MahjongHand GenerateRandomWinningStandardHand(
+            List<int> selectedSuits,
+            HonorConfiguration honorConfiguration)
+        {
+            while (true)
+            {
+                var hand = new MahjongHand();
+                var usedCounts = new int[TileTypeCount];
+
+                TileType pair =
+                    GetRandomPairTile(
+                        selectedSuits,
+                        honorConfiguration,
+                        usedCounts);
+
+                AddTile(hand, usedCounts, pair);
+                AddTile(hand, usedCounts, pair);
+
+                for (int i = 0; i < 4; i++)
+                {
+                    bool added;
+
+                    if (_random.NextDouble() < 0.5)
+                    {
+                        added = TryAddRandomTriplet(
+                            hand,
+                            usedCounts,
+                            selectedSuits,
+                            honorConfiguration);
+                    }
+                    else
+                    {
+                        added = TryAddRandomSequence(
+                            hand,
+                            usedCounts,
+                            selectedSuits);
+                    }
+
+                    if (!added)
+                    {
+                        i--;
+                    }
+                }
+
+                if (hand.TileCount == 14)
+                {
+                    return hand;
+                }
+            }
         }
 
         private bool TryAddRandomSequence(
             MahjongHand hand,
-            int[] usedCounts)
+            int[] usedCounts,
+            List<int> selectedSuits)
         {
-            int suit = _random.Next(3);
+            if (selectedSuits.Count == 0)
+            {
+                return false;
+            }
+
+            int suit =
+                selectedSuits[
+                    _random.Next(selectedSuits.Count)];
+
             int startRank = _random.Next(7);
 
             int first = suit * 9 + startRank;
@@ -379,6 +499,256 @@ namespace RiichiDojo.Mahjong
             hand.AddTile(duplicateTile);
 
             return hand;
+        }
+        
+        private List<int> SelectSuits(int numberOfSuits)
+        {
+            var suits = new List<int>
+            {
+                0,
+                1,
+                2
+            };
+
+            for (int i = suits.Count - 1; i > 0; i--)
+            {
+                int j = _random.Next(i + 1);
+
+                (suits[i], suits[j]) =
+                    (suits[j], suits[i]);
+            }
+
+            return suits
+                .Take(numberOfSuits)
+                .ToList();
+        }
+        
+        private HonorConfiguration SelectHonorConfiguration(
+            HandGenerationSettings settings)
+        {
+            int totalWeight =
+                settings.NoHonorsWeight +
+                settings.WindsWeight +
+                settings.DragonsWeight +
+                settings.WindsAndDragonsWeight;
+
+            if (totalWeight <= 0)
+            {
+                throw new InvalidOperationException(
+                    "Total honor weight must be greater than zero.");
+            }
+
+            int roll = _random.Next(totalWeight);
+
+            if (roll < settings.NoHonorsWeight)
+            {
+                return HonorConfiguration.None;
+            }
+
+            roll -= settings.NoHonorsWeight;
+
+            if (roll < settings.WindsWeight)
+            {
+                return HonorConfiguration.Winds;
+            }
+
+            roll -= settings.WindsWeight;
+
+            if (roll < settings.DragonsWeight)
+            {
+                return HonorConfiguration.Dragons;
+            }
+
+            return HonorConfiguration.WindsAndDragons;
+        }
+        
+        private bool MatchesGenerationSettings(
+            MahjongHand hand,
+            List<int> selectedSuits,
+            HonorConfiguration honorConfiguration)
+        {
+            var presentSuits = new HashSet<int>();
+
+            bool hasWind = false;
+            bool hasDragon = false;
+
+            foreach (TileType tile in hand.Tiles)
+            {
+                int index = (int)tile;
+
+                if (index < 27)
+                {
+                    int suit = index / 9;
+                    presentSuits.Add(suit);
+                    continue;
+                }
+
+                if (tile >= TileType.East &&
+                    tile <= TileType.North)
+                {
+                    hasWind = true;
+                }
+
+                if (tile >= TileType.White &&
+                    tile <= TileType.Red)
+                {
+                    hasDragon = true;
+                }
+            }
+
+            if (presentSuits.Count != selectedSuits.Count)
+            {
+                return false;
+            }
+
+            foreach (int suit in selectedSuits)
+            {
+                if (!presentSuits.Contains(suit))
+                {
+                    return false;
+                }
+            }
+
+            switch (honorConfiguration)
+            {
+                case HonorConfiguration.None:
+                    return !hasWind && !hasDragon;
+
+                case HonorConfiguration.Winds:
+                    return hasWind && !hasDragon;
+
+                case HonorConfiguration.Dragons:
+                    return !hasWind && hasDragon;
+
+                case HonorConfiguration.WindsAndDragons:
+                    return hasWind && hasDragon;
+
+                default:
+                    return false;
+            }
+        }
+        
+        private TileType GetRandomPairTile(
+            List<int> selectedSuits,
+            HonorConfiguration honorConfiguration,
+            int[] usedCounts)
+        {
+            var candidates = new List<TileType>();
+
+            foreach (int suit in selectedSuits)
+            {
+                int first = suit * 9;
+
+                for (int rank = 0; rank < 9; rank++)
+                {
+                    TileType tile =
+                        (TileType)(first + rank);
+
+                    if (usedCounts[(int)tile] <= 2)
+                    {
+                        candidates.Add(tile);
+                    }
+                }
+            }
+
+            if (honorConfiguration == HonorConfiguration.Winds ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                candidates.AddRange(GetWindTiles());
+            }
+
+            if (honorConfiguration == HonorConfiguration.Dragons ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                candidates.AddRange(GetDragonTiles());
+            }
+
+            return candidates[
+                _random.Next(candidates.Count)];
+        }
+        
+        private bool TryAddRandomTriplet(
+            MahjongHand hand,
+            int[] usedCounts,
+            List<int> selectedSuits,
+            HonorConfiguration honorConfiguration)
+        {
+            var candidates = new List<TileType>();
+
+            foreach (int suit in selectedSuits)
+            {
+                int first = suit * 9;
+
+                for (int rank = 0; rank < 9; rank++)
+                {
+                    int tileIndex = first + rank;
+                    TileType candidate = (TileType)tileIndex;
+
+                    if (usedCounts[tileIndex] <= 1)
+                    {
+                        candidates.Add(candidate);
+                    }
+                }
+            }
+
+            if (honorConfiguration == HonorConfiguration.Winds ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                foreach (TileType wind in GetWindTiles())
+                {
+                    if (usedCounts[(int)wind] <= 1)
+                    {
+                        candidates.Add(wind);
+                    }
+                }
+            }
+
+            if (honorConfiguration == HonorConfiguration.Dragons ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                foreach (TileType dragon in GetDragonTiles())
+                {
+                    if (usedCounts[(int)dragon] <= 1)
+                    {
+                        candidates.Add(dragon);
+                    }
+                }
+            }
+
+            if (candidates.Count == 0)
+            {
+                return false;
+            }
+
+            TileType selectedTile =
+                candidates[_random.Next(candidates.Count)];
+
+            AddTile(hand, usedCounts, selectedTile);
+            AddTile(hand, usedCounts, selectedTile);
+            AddTile(hand, usedCounts, selectedTile);
+
+            return true;
+        }
+        
+        private static TileType[] GetWindTiles()
+        {
+            return new[]
+            {
+                TileType.East,
+                TileType.South,
+                TileType.West,
+                TileType.North
+            };
+        }
+
+        private static TileType[] GetDragonTiles()
+        {
+            return new[]
+            {
+                TileType.White,
+                TileType.Green,
+                TileType.Red
+            };
         }
     }
 }

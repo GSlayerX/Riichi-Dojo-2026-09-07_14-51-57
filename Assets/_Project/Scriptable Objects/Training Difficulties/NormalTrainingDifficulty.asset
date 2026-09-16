@@ -10,8 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a72c4c0a4fdf7b848bc403f1f46a8547, type: 3}
-  m_Name: MediumTrainingDifficulty
+  m_Name: NormalTrainingDifficulty
   m_EditorClassIdentifier: Assembly-CSharp::TrainingDifficultyData
   _displayName: Medium
-  _minWaits: 3
-  _maxWaits: 5
+  _numberOfSuits: 2
+  _noHonorsWeight: 70
+  _windsWeight: 10
+  _dragonsWeight: 10
+  _windsAndDragonsWeight: 10

@@ -23,72 +23,36 @@ public class TrainingController : MonoBehaviour
     private string _themeName = "White";
 
     [SerializeField]
-    private TMP_Dropdown _trainingModeDropdown;
-
-    [SerializeField]
-    private TrainingModeData[] _trainingModes;
-
-    [SerializeField]
     private TMP_Dropdown _trainingDifficultyDropdown;
 
     [SerializeField]
     private TrainingDifficultyData[] _trainingDifficulties;
     
     private TrainingQuestion _currentQuestion;
-    private TrainingModeData _currentTrainingMode;
     private TrainingDifficultyData _currentTrainingDifficulty;
     private readonly AnswerChecker _answerChecker = new();
     
     private void Start()
     {
-        InitializeTrainingModeDropdown();
         InitializeTrainingDifficultyDropdown();
-        
-        _trainingModeDropdown.value = 0;
-        _currentTrainingMode = _trainingModes[
-            _trainingModeDropdown.value];
+
         _currentTrainingDifficulty = _trainingDifficulties[0];
 
         LoadQuestion();
 
-        _trainingModeDropdown.onValueChanged.AddListener(
-            OnTrainingModeChanged);
         _trainingDifficultyDropdown.onValueChanged.AddListener(
             OnTrainingDifficultyChanged);
-    }
-    
-    private void InitializeTrainingModeDropdown()
-    {
-        _trainingModeDropdown.ClearOptions();
-
-        var options =
-            new System.Collections.Generic.List<string>();
-
-        foreach (TrainingModeData mode in _trainingModes)
-        {
-            options.Add(mode.DisplayName);
-        }
-
-        _trainingModeDropdown.AddOptions(options);
     }
     
     private void LoadQuestion()
     {
         var generator = new HandGenerator();
 
-        if (_currentTrainingMode.IsAll)
-        {
-            _currentQuestion =
-                generator.GenerateQuestion(
-                    _currentTrainingDifficulty.MinWaits,
-                    _currentTrainingDifficulty.MaxWaits);
-        }
-        else
-        {
-            _currentQuestion =
-                generator.GenerateQuestion(
-                    _currentTrainingMode.Pattern);
-        }
+        HandGenerationSettings settings =
+            _currentTrainingDifficulty.GetGenerationSettings();
+
+        _currentQuestion =
+            generator.GenerateQuestion(settings);
 
         TileThemeData theme =
             _themeDatabase.GetTheme(_themeName);
@@ -142,13 +106,6 @@ public class TrainingController : MonoBehaviour
         }
 
         LoadQuestion();
-    }
-    
-    private void OnTrainingModeChanged(int value)
-    {
-        _currentTrainingMode = _trainingModes[value];
-
-        NextQuestion();
     }
     
     private void InitializeTrainingDifficultyDropdown()

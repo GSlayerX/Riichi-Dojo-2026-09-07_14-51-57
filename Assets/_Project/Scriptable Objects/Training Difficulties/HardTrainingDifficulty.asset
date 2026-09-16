@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: HardTrainingDifficulty
   m_EditorClassIdentifier: Assembly-CSharp::TrainingDifficultyData
   _displayName: Hard
-  _minWaits: 6
-  _maxWaits: 9
+  _numberOfSuits: 1
+  _noHonorsWeight: 85
+  _windsWeight: 5
+  _dragonsWeight: 5
+  _windsAndDragonsWeight: 5
