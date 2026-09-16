@@ -29,7 +29,7 @@ namespace RiichiDojo.Mahjong
                     return GenerateRandomStandardTenpaiHand(settings);
 
                 case HandGenerationType.Chiitoitsu:
-                    return GenerateRandomChiitoitsuHand();
+                    return GenerateRandomChiitoitsuHand(settings);
 
                 case HandGenerationType.Kokushi:
                     return GenerateRandomKokushiHand();
@@ -52,7 +52,16 @@ namespace RiichiDojo.Mahjong
         {
             if (pattern == HandPattern.Chiitoitsu)
             {
-                return GenerateRandomChiitoitsuHand();
+                return GenerateRandomChiitoitsuHand(
+                    new HandGenerationSettings(
+                        numberOfSuits: 3,
+                        noHonorsWeight: 100,
+                        windsWeight: 0,
+                        dragonsWeight: 0,
+                        windsAndDragonsWeight: 0,
+                        chiitoitsuWeight: 0,
+                        kokushiWeight: 0,
+                        churenpotoWeight: 0));
             }
 
             if (pattern == HandPattern.Kokushi)
@@ -271,35 +280,117 @@ namespace RiichiDojo.Mahjong
             return hand;
         }
 
-        private MahjongHand GenerateRandomChiitoitsuHand()
+        private MahjongHand GenerateRandomChiitoitsuHand(
+            HandGenerationSettings settings)
         {
             var hand = new MahjongHand();
 
-            var selectedTiles =
-                new HashSet<TileType>();
+            var selectedSuits =
+                SelectSuits(settings.NumberOfSuits);
 
-            while (selectedTiles.Count < 6)
+            HonorConfiguration honorConfiguration =
+                HonorConfiguration.None;
+
+            if (settings.NoHonorsWeight +
+                settings.WindsWeight +
+                settings.DragonsWeight +
+                settings.WindsAndDragonsWeight > 0)
             {
-                TileType tile =
-                    (TileType)_random.Next(TileTypeCount);
+                honorConfiguration =
+                    SelectHonorConfiguration(settings);
+            }
 
-                if (selectedTiles.Add(tile))
+            var availableTiles =
+                new List<TileType>();
+
+            foreach (int suit in selectedSuits)
+            {
+                int firstTile = suit * 9;
+
+                for (int rank = 0; rank < 9; rank++)
                 {
-                    hand.AddTile(tile);
-                    hand.AddTile(tile);
+                    availableTiles.Add(
+                        (TileType)(firstTile + rank));
                 }
             }
 
-            TileType singleTile;
-
-            do
+            if (honorConfiguration == HonorConfiguration.Winds ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
             {
-                singleTile =
-                    (TileType)_random.Next(TileTypeCount);
+                availableTiles.Add(TileType.East);
+                availableTiles.Add(TileType.South);
+                availableTiles.Add(TileType.West);
+                availableTiles.Add(TileType.North);
             }
-            while (selectedTiles.Contains(singleTile));
 
-            hand.AddTile(singleTile);
+            if (honorConfiguration == HonorConfiguration.Dragons ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                availableTiles.Add(TileType.White);
+                availableTiles.Add(TileType.Green);
+                availableTiles.Add(TileType.Red);
+            }
+
+            var selectedTiles =
+                new List<TileType>();
+
+            foreach (int suit in selectedSuits)
+            {
+                int firstTile = suit * 9;
+                int rank = _random.Next(9);
+
+                selectedTiles.Add(
+                    (TileType)(firstTile + rank));
+            }
+            
+            if (honorConfiguration == HonorConfiguration.Winds ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                var winds = new[]
+                {
+                    TileType.East,
+                    TileType.South,
+                    TileType.West,
+                    TileType.North
+                };
+
+                selectedTiles.Add(
+                    winds[_random.Next(winds.Length)]);
+            }
+
+            if (honorConfiguration == HonorConfiguration.Dragons ||
+                honorConfiguration == HonorConfiguration.WindsAndDragons)
+            {
+                var dragons = new[]
+                {
+                    TileType.White,
+                    TileType.Green,
+                    TileType.Red
+                };
+
+                selectedTiles.Add(
+                    dragons[_random.Next(dragons.Length)]);
+            }
+
+            while (selectedTiles.Count < 7)
+            {
+                TileType tile =
+                    availableTiles[
+                        _random.Next(availableTiles.Count)];
+
+                if (!selectedTiles.Contains(tile))
+                {
+                    selectedTiles.Add(tile);
+                }
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                hand.AddTile(selectedTiles[i]);
+                hand.AddTile(selectedTiles[i]);
+            }
+
+            hand.AddTile(selectedTiles[6]);
 
             return hand;
         }

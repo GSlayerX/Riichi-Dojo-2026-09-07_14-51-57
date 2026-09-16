@@ -2120,6 +2120,10 @@ namespace RiichiDojo.Mahjong.Tests
                 MahjongHand hand =
                     generator.GenerateHand(settings);
 
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
                 var result =
                     new WaitCalculator().CalculateWaits(hand);
 
@@ -2257,6 +2261,235 @@ namespace RiichiDojo.Mahjong.Tests
             Assert.That(
                 question.Patterns,
                 Does.Contain(HandPattern.Churenpoto));
+        }
+        
+        [Test]
+        public void GenerateHand_ChiitoitsuWithTwoSuitsAndAllHonors_UsesExpectedTiles()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 2,
+                    noHonorsWeight: 0,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 100,
+                    chiitoitsuWeight: 100,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                var numberedSuits =
+                    new HashSet<int>();
+
+                foreach (TileType tile in hand.Tiles)
+                {
+                    int index = (int)tile;
+
+                    if (index < 27)
+                    {
+                        numberedSuits.Add(index / 9);
+                    }
+                }
+
+                Assert.That(
+                    numberedSuits.Count,
+                    Is.EqualTo(2));
+
+                bool hasWind =
+                    hand.GetCount(TileType.East) > 0 ||
+                    hand.GetCount(TileType.South) > 0 ||
+                    hand.GetCount(TileType.West) > 0 ||
+                    hand.GetCount(TileType.North) > 0;
+
+                bool hasDragon =
+                    hand.GetCount(TileType.White) > 0 ||
+                    hand.GetCount(TileType.Green) > 0 ||
+                    hand.GetCount(TileType.Red) > 0;
+
+                Assert.That(hasWind, Is.True);
+                Assert.That(hasDragon, Is.True);
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Chiitoitsu));
+            }
+        }
+        
+        [TestCase(
+            HonorConfiguration.None,
+            100, 0, 0, 0)]
+        [TestCase(
+            HonorConfiguration.Winds,
+            0, 100, 0, 0)]
+        [TestCase(
+            HonorConfiguration.Dragons,
+            0, 0, 100, 0)]
+        [TestCase(
+            HonorConfiguration.WindsAndDragons,
+            0, 0, 0, 100)]
+        public void GenerateHand_Chiitoitsu_UsesExpectedHonorConfiguration(
+            HonorConfiguration expectedConfiguration,
+            int noHonorsWeight,
+            int windsWeight,
+            int dragonsWeight,
+            int windsAndDragonsWeight)
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 2,
+                    noHonorsWeight: noHonorsWeight,
+                    windsWeight: windsWeight,
+                    dragonsWeight: dragonsWeight,
+                    windsAndDragonsWeight: windsAndDragonsWeight,
+                    chiitoitsuWeight: 100,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                bool hasWind =
+                    hand.GetCount(TileType.East) > 0 ||
+                    hand.GetCount(TileType.South) > 0 ||
+                    hand.GetCount(TileType.West) > 0 ||
+                    hand.GetCount(TileType.North) > 0;
+
+                bool hasDragon =
+                    hand.GetCount(TileType.White) > 0 ||
+                    hand.GetCount(TileType.Green) > 0 ||
+                    hand.GetCount(TileType.Red) > 0;
+
+                switch (expectedConfiguration)
+                {
+                    case HonorConfiguration.None:
+                        Assert.That(hasWind, Is.False);
+                        Assert.That(hasDragon, Is.False);
+                        break;
+
+                    case HonorConfiguration.Winds:
+                        Assert.That(hasWind, Is.True);
+                        Assert.That(hasDragon, Is.False);
+                        break;
+
+                    case HonorConfiguration.Dragons:
+                        Assert.That(hasWind, Is.False);
+                        Assert.That(hasDragon, Is.True);
+                        break;
+
+                    case HonorConfiguration.WindsAndDragons:
+                        Assert.That(hasWind, Is.True);
+                        Assert.That(hasDragon, Is.True);
+                        break;
+                }
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Chiitoitsu));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_EasyChiitoitsu_UsesThreeSuits()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 60,
+                    windsWeight: 15,
+                    dragonsWeight: 15,
+                    windsAndDragonsWeight: 10,
+                    chiitoitsuWeight: 100,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var suits =
+                    new HashSet<int>();
+
+                foreach (TileType tile in hand.Tiles)
+                {
+                    int index = (int)tile;
+
+                    if (index < 27)
+                    {
+                        suits.Add(index / 9);
+                    }
+                }
+
+                Assert.That(
+                    suits.Count,
+                    Is.EqualTo(3));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_NormalChiitoitsu_UsesTwoSuits()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 2,
+                    noHonorsWeight: 70,
+                    windsWeight: 10,
+                    dragonsWeight: 10,
+                    windsAndDragonsWeight: 10,
+                    chiitoitsuWeight: 100,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var suits =
+                    new HashSet<int>();
+
+                foreach (TileType tile in hand.Tiles)
+                {
+                    int index = (int)tile;
+
+                    if (index < 27)
+                    {
+                        suits.Add(index / 9);
+                    }
+                }
+
+                Assert.That(
+                    suits.Count,
+                    Is.EqualTo(2));
+            }
         }
     }
 }
