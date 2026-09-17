@@ -7,7 +7,7 @@ namespace RiichiDojo
     {
         private const string FileName = "UserSettings.json";
 
-        private const int CurrentVersion = 2;
+        private const int CurrentVersion = 3;
         
         private string FilePath =>
             Path.Combine(
@@ -46,13 +46,33 @@ namespace RiichiDojo
                 return new UserSettings();
             }
 
-            if (version < CurrentVersion)
+            if (version == 1)
             {
                 var legacySettings =
                     JsonUtility.FromJson<LegacyUserSettings>(json);
 
                 UserSettings migratedSettings =
                     Migrate(legacySettings);
+
+                Save(migratedSettings);
+
+                return migratedSettings;
+            }
+
+            if (version == 2)
+            {
+                var version2Settings =
+                    JsonUtility.FromJson<Version2UserSettings>(json);
+
+                var migratedSettings = new UserSettings
+                {
+                    Version = CurrentVersion,
+                    TrainingDifficulty =
+                        version2Settings.TrainingDifficulty,
+                    TileTheme =
+                        version2Settings.TileTheme,
+                    Statistics = new Statistics()
+                };
 
                 Save(migratedSettings);
 
@@ -126,7 +146,7 @@ namespace RiichiDojo
             switch (settings.TrainingDifficulty)
             {
                 case "Easy":
-                    settings.TrainingDifficulty = "1Suit";
+                    settings.TrainingDifficulty = "3Suits";
                     break;
 
                 case "Medium":
@@ -134,7 +154,7 @@ namespace RiichiDojo
                     break;
 
                 case "Hard":
-                    settings.TrainingDifficulty = "3Suits";
+                    settings.TrainingDifficulty = "1Suit";
                     break;
             }
 
@@ -145,14 +165,14 @@ namespace RiichiDojo
         {
             string[] difficultyIds =
             {
-                "1Suit",
+                "3Suits",
                 "2Suits",
-                "3Suits"
+                "1Suit"
             };
 
             if (index < 0 || index >= difficultyIds.Length)
             {
-                return "1Suit";
+                return "3Suits";
             }
 
             return difficultyIds[index];
@@ -172,6 +192,16 @@ namespace RiichiDojo
             }
 
             return themes[index];
+        }
+        
+        [System.Serializable]
+        private class Version2UserSettings
+        {
+            public int Version = 2;
+
+            public string TrainingDifficulty = "3Suits";
+
+            public string TileTheme = "White";
         }
         
         [System.Serializable]

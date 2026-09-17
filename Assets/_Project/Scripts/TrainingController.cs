@@ -34,6 +34,7 @@ public class TrainingController : MonoBehaviour
     private TMP_Dropdown _tileThemeDropdown;
     
     private TrainingQuestion _currentQuestion;
+    private bool _questionAnswered;
     private TrainingDifficultyData _currentTrainingDifficulty;
     private readonly AnswerChecker _answerChecker = new();
     private readonly List<MahjongTileUI> _handTiles = new();
@@ -113,7 +114,9 @@ public class TrainingController : MonoBehaviour
 
         _currentQuestion =
             generator.GenerateQuestion(settings);
-
+        
+        _questionAnswered = false;
+        
         TileThemeData theme =
             _themeDatabase.GetTheme(_themeName);
 
@@ -144,11 +147,29 @@ public class TrainingController : MonoBehaviour
     
     public void CheckAnswer()
     {
+        if (_questionAnswered)
+        {
+            return;
+        }
+
+        _userSettings =
+            _userSettingsService.Load();
+
+        _questionAnswered = true;
+
         bool isCorrect =
             _answerChecker.IsCorrect(
                 _currentQuestion,
                 _tileSelector.SelectedTiles);
-        
+
+        StatisticsData statistics =
+            _userSettings.Statistics.GetByDifficultyId(
+                _currentTrainingDifficulty.Id);
+
+        statistics.RecordAnswer(isCorrect);
+
+        _userSettingsService.Save(_userSettings);
+
         _tileSelector.SetSelectionEnabled(false);
 
         if (isCorrect)
