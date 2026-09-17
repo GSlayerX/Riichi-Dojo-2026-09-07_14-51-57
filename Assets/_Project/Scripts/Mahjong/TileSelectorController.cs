@@ -175,6 +175,38 @@ namespace RiichiDojo.Mahjong
             return null;
         }
         
+        public void SetTheme(TileThemeData theme)
+        {
+            _theme = theme;
+
+            foreach (Transform child in _container)
+            {
+                MahjongTileButton button =
+                    child.GetComponent<MahjongTileButton>();
+
+                if (button != null)
+                {
+                    button.SetTheme(theme);
+                }
+            }
+
+            foreach (MahjongTileUI tile in _selectedTiles.Values)
+            {
+                if (tile != null)
+                {
+                    tile.SetTheme(theme);
+                }
+            }
+
+            foreach (MahjongTileUI tile in _correctAnswerTiles)
+            {
+                if (tile != null)
+                {
+                    tile.SetTheme(theme);
+                }
+            }
+        }
+        
         public void SetSelectionEnabled(bool enabled)
         {
             _selectionEnabled = enabled;

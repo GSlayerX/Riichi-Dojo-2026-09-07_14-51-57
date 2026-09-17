@@ -2491,5 +2491,539 @@ namespace RiichiDojo.Mahjong.Tests
                     Is.EqualTo(2));
             }
         }
+        
+        [Test]
+        public void GenerateHand_NormalStandard_NoHonors_UsesTwoSuits()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 2,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                var suits =
+                    new HashSet<int>();
+
+                foreach (TileType tile in hand.Tiles)
+                {
+                    int index = (int)tile;
+
+                    Assert.That(
+                        index,
+                        Is.LessThan(27));
+
+                    suits.Add(index / 9);
+                }
+
+                Assert.That(
+                    suits.Count,
+                    Is.EqualTo(2));
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Waits.Count,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Standard));
+            }
+        }
+        
+        [TestCase(
+            HonorConfiguration.Winds,
+            0, 100, 0, 0)]
+        [TestCase(
+            HonorConfiguration.Dragons,
+            0, 0, 100, 0)]
+        [TestCase(
+            HonorConfiguration.WindsAndDragons,
+            0, 0, 0, 100)]
+        public void GenerateHand_NormalStandard_UsesExpectedHonors(
+            HonorConfiguration expectedConfiguration,
+            int noHonorsWeight,
+            int windsWeight,
+            int dragonsWeight,
+            int windsAndDragonsWeight)
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 2,
+                    noHonorsWeight: noHonorsWeight,
+                    windsWeight: windsWeight,
+                    dragonsWeight: dragonsWeight,
+                    windsAndDragonsWeight: windsAndDragonsWeight,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                bool hasWind =
+                    hand.GetCount(TileType.East) > 0 ||
+                    hand.GetCount(TileType.South) > 0 ||
+                    hand.GetCount(TileType.West) > 0 ||
+                    hand.GetCount(TileType.North) > 0;
+
+                bool hasDragon =
+                    hand.GetCount(TileType.White) > 0 ||
+                    hand.GetCount(TileType.Green) > 0 ||
+                    hand.GetCount(TileType.Red) > 0;
+
+                switch (expectedConfiguration)
+                {
+                    case HonorConfiguration.Winds:
+                        Assert.That(hasWind, Is.True);
+                        Assert.That(hasDragon, Is.False);
+                        break;
+
+                    case HonorConfiguration.Dragons:
+                        Assert.That(hasWind, Is.False);
+                        Assert.That(hasDragon, Is.True);
+                        break;
+
+                    case HonorConfiguration.WindsAndDragons:
+                        Assert.That(hasWind, Is.True);
+                        Assert.That(hasDragon, Is.True);
+                        break;
+                }
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Waits.Count,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Standard));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_EasyStandard_NoHonors_UsesThreeSuits()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                var suits =
+                    new HashSet<int>();
+
+                foreach (TileType tile in hand.Tiles)
+                {
+                    int index = (int)tile;
+
+                    Assert.That(
+                        index,
+                        Is.LessThan(27));
+
+                    suits.Add(index / 9);
+                }
+
+                Assert.That(
+                    suits.Count,
+                    Is.EqualTo(3));
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Waits.Count,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Standard));
+            }
+        }
+        
+        [TestCase(
+            HonorConfiguration.Winds,
+            0, 100, 0, 0)]
+        [TestCase(
+            HonorConfiguration.Dragons,
+            0, 0, 100, 0)]
+        [TestCase(
+            HonorConfiguration.WindsAndDragons,
+            0, 0, 0, 100)]
+        public void GenerateHand_EasyStandard_UsesExpectedHonors(
+            HonorConfiguration expectedConfiguration,
+            int noHonorsWeight,
+            int windsWeight,
+            int dragonsWeight,
+            int windsAndDragonsWeight)
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: noHonorsWeight,
+                    windsWeight: windsWeight,
+                    dragonsWeight: dragonsWeight,
+                    windsAndDragonsWeight: windsAndDragonsWeight,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                bool hasWind =
+                    hand.GetCount(TileType.East) > 0 ||
+                    hand.GetCount(TileType.South) > 0 ||
+                    hand.GetCount(TileType.West) > 0 ||
+                    hand.GetCount(TileType.North) > 0;
+
+                bool hasDragon =
+                    hand.GetCount(TileType.White) > 0 ||
+                    hand.GetCount(TileType.Green) > 0 ||
+                    hand.GetCount(TileType.Red) > 0;
+
+                switch (expectedConfiguration)
+                {
+                    case HonorConfiguration.Winds:
+                        Assert.That(hasWind, Is.True);
+                        Assert.That(hasDragon, Is.False);
+                        break;
+
+                    case HonorConfiguration.Dragons:
+                        Assert.That(hasWind, Is.False);
+                        Assert.That(hasDragon, Is.True);
+                        break;
+
+                    case HonorConfiguration.WindsAndDragons:
+                        Assert.That(hasWind, Is.True);
+                        Assert.That(hasDragon, Is.True);
+                        break;
+                }
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Waits.Count,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Standard));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_HardStandard_NoHonors_UsesOneSuit()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 1,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                var suits =
+                    new HashSet<int>();
+
+                foreach (TileType tile in hand.Tiles)
+                {
+                    int index = (int)tile;
+
+                    Assert.That(
+                        index,
+                        Is.LessThan(27));
+
+                    suits.Add(index / 9);
+                }
+
+                Assert.That(
+                    suits.Count,
+                    Is.EqualTo(1));
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Waits.Count,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Standard));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_HardChurenpotoWeight100_GeneratesChurenpoto()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 1,
+                    noHonorsWeight: 100,
+                    windsWeight: 0,
+                    dragonsWeight: 0,
+                    windsAndDragonsWeight: 0,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 100);
+
+            var generator = new HandGenerator();
+
+            for (int i = 0; i < 100; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                Assert.That(
+                    hand.TileCount,
+                    Is.EqualTo(13));
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                Assert.That(
+                    result.Waits.Count,
+                    Is.GreaterThan(0));
+
+                Assert.That(
+                    result.Patterns,
+                    Does.Contain(HandPattern.Churenpoto));
+            }
+        }
+        
+        [Test]
+        public void GenerateHand_NormalMixedWeights_GeneratesStandardAndChiitoitsu()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 2,
+                    noHonorsWeight: 70,
+                    windsWeight: 10,
+                    dragonsWeight: 10,
+                    windsAndDragonsWeight: 10,
+                    chiitoitsuWeight: 2,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            bool foundStandard = false;
+            bool foundChiitoitsu = false;
+
+            for (int i = 0; i < 1000; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                if (result.Patterns.Contains(HandPattern.Standard))
+                {
+                    foundStandard = true;
+                }
+
+                if (result.Patterns.Contains(HandPattern.Chiitoitsu))
+                {
+                    foundChiitoitsu = true;
+                }
+
+                if (foundStandard && foundChiitoitsu)
+                {
+                    break;
+                }
+            }
+
+            Assert.That(
+                foundStandard,
+                Is.True);
+
+            Assert.That(
+                foundChiitoitsu,
+                Is.True);
+        }
+        
+        [Test]
+        public void GenerateHand_EasyMixedWeights_GeneratesExpectedHandTypes()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 3,
+                    noHonorsWeight: 60,
+                    windsWeight: 15,
+                    dragonsWeight: 15,
+                    windsAndDragonsWeight: 10,
+                    chiitoitsuWeight: 2,
+                    kokushiWeight: 2,
+                    churenpotoWeight: 0);
+
+            var generator = new HandGenerator();
+
+            bool foundStandard = false;
+            bool foundChiitoitsu = false;
+            bool foundKokushi = false;
+
+            for (int i = 0; i < 1000; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                if (result.Patterns.Contains(HandPattern.Standard))
+                {
+                    foundStandard = true;
+                }
+
+                if (result.Patterns.Contains(HandPattern.Chiitoitsu))
+                {
+                    foundChiitoitsu = true;
+                }
+
+                if (result.Patterns.Contains(HandPattern.Kokushi))
+                {
+                    foundKokushi = true;
+                }
+
+                if (foundStandard &&
+                    foundChiitoitsu &&
+                    foundKokushi)
+                {
+                    break;
+                }
+            }
+
+            Assert.That(
+                foundStandard,
+                Is.True);
+
+            Assert.That(
+                foundChiitoitsu,
+                Is.True);
+
+            Assert.That(
+                foundKokushi,
+                Is.True);
+        }
+        
+        [Test]
+        public void GenerateHand_HardMixedWeights_GeneratesStandardAndChurenpoto()
+        {
+            var settings =
+                new HandGenerationSettings(
+                    numberOfSuits: 1,
+                    noHonorsWeight: 85,
+                    windsWeight: 5,
+                    dragonsWeight: 5,
+                    windsAndDragonsWeight: 5,
+                    chiitoitsuWeight: 0,
+                    kokushiWeight: 0,
+                    churenpotoWeight: 4);
+
+            var generator = new HandGenerator();
+
+            bool foundStandard = false;
+            bool foundChurenpoto = false;
+
+            for (int i = 0; i < 1000; i++)
+            {
+                MahjongHand hand =
+                    generator.GenerateHand(settings);
+
+                var result =
+                    new WaitCalculator().CalculateWaits(hand);
+
+                if (result.Patterns.Contains(HandPattern.Standard))
+                {
+                    foundStandard = true;
+                }
+
+                if (result.Patterns.Contains(HandPattern.Churenpoto))
+                {
+                    foundChurenpoto = true;
+                }
+
+                if (foundStandard && foundChurenpoto)
+                {
+                    break;
+                }
+            }
+
+            Assert.That(
+                foundStandard,
+                Is.True);
+
+            Assert.That(
+                foundChurenpoto,
+                Is.True);
+        }
     }
 }

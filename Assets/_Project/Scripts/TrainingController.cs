@@ -1,6 +1,7 @@
 using UnityEngine;
 using RiichiDojo.Mahjong;
 using TMPro;
+using System.Collections.Generic;
 
 public class TrainingController : MonoBehaviour
 {
@@ -28,20 +29,28 @@ public class TrainingController : MonoBehaviour
     [SerializeField]
     private TrainingDifficultyData[] _trainingDifficulties;
     
+    [SerializeField]
+    private TMP_Dropdown _tileThemeDropdown;
+    
     private TrainingQuestion _currentQuestion;
     private TrainingDifficultyData _currentTrainingDifficulty;
     private readonly AnswerChecker _answerChecker = new();
+    private readonly List<MahjongTileUI> _handTiles = new();
     
     private void Start()
     {
         InitializeTrainingDifficultyDropdown();
-
+        InitializeTileThemeDropdown();
+        
         _currentTrainingDifficulty = _trainingDifficulties[0];
 
         LoadQuestion();
 
         _trainingDifficultyDropdown.onValueChanged.AddListener(
             OnTrainingDifficultyChanged);
+        
+        _tileThemeDropdown.onValueChanged.AddListener(
+            OnTileThemeChanged);
     }
     
     private void LoadQuestion()
@@ -66,6 +75,8 @@ public class TrainingController : MonoBehaviour
 
         _tileSelector.Initialize(_currentQuestion.Hand);
 
+        _handTiles.Clear();
+
         foreach (TileType tile in _currentQuestion.Hand.Tiles)
         {
             MahjongTileUI tileUI =
@@ -73,6 +84,8 @@ public class TrainingController : MonoBehaviour
 
             tileUI.SetTile(tile);
             tileUI.SetTheme(theme);
+
+            _handTiles.Add(tileUI);
         }
 
         _resultText.text = string.Empty;
@@ -129,5 +142,46 @@ public class TrainingController : MonoBehaviour
             _trainingDifficulties[value];
 
         NextQuestion();
+    }
+    
+    private void InitializeTileThemeDropdown()
+    {
+        _tileThemeDropdown.ClearOptions();
+
+        var options =
+            new System.Collections.Generic.List<string>();
+
+        foreach (TileThemeData theme in _themeDatabase.Themes)
+        {
+            if (theme != null)
+            {
+                options.Add(theme.ThemeName);
+            }
+        }
+
+        _tileThemeDropdown.AddOptions(options);
+    }
+    
+    private void OnTileThemeChanged(int value)
+    {
+        TileThemeData theme =
+            _themeDatabase.GetTheme(value);
+
+        if (theme == null)
+        {
+            return;
+        }
+
+        _themeName = theme.ThemeName;
+
+        _tileSelector.SetTheme(theme);
+        
+        foreach (MahjongTileUI tile in _handTiles)
+        {
+            if (tile != null)
+            {
+                tile.SetTheme(theme);
+            }
+        }
     }
 }
