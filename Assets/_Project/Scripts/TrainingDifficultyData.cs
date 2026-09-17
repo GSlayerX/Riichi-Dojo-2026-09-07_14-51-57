@@ -7,6 +7,9 @@ using RiichiDojo.Mahjong;
 public class TrainingDifficultyData : ScriptableObject
 {
     [SerializeField]
+    private string _id;
+    
+    [SerializeField]
     private string _displayName;
 
     [SerializeField]
@@ -44,6 +47,8 @@ public class TrainingDifficultyData : ScriptableObject
     [SerializeField]
     [Min(0)]
     private int _churenpotoWeight;
+    
+    public string Id => _id;
     
     public string DisplayName => _displayName;
 

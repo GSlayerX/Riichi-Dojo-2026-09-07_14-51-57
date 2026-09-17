@@ -2,6 +2,7 @@ using UnityEngine;
 using RiichiDojo.Mahjong;
 using TMPro;
 using System.Collections.Generic;
+using RiichiDojo;
 
 public class TrainingController : MonoBehaviour
 {
@@ -37,13 +38,63 @@ public class TrainingController : MonoBehaviour
     private readonly AnswerChecker _answerChecker = new();
     private readonly List<MahjongTileUI> _handTiles = new();
     
+    private readonly UserSettingsService _userSettingsService = new();
+
+    private UserSettings _userSettings;
+    
     private void Start()
     {
+        _userSettings = _userSettingsService.Load();
+        
         InitializeTrainingDifficultyDropdown();
         InitializeTileThemeDropdown();
         
-        _currentTrainingDifficulty = _trainingDifficulties[0];
+        int difficultyIndex = 0;
 
+        for (int i = 0; i < _trainingDifficulties.Length; i++)
+        {
+            if (_trainingDifficulties[i].Id ==
+                _userSettings.TrainingDifficulty)
+            {
+                difficultyIndex = i;
+                break;
+            }
+        }
+
+        _currentTrainingDifficulty =
+            _trainingDifficulties[difficultyIndex];
+
+        _trainingDifficultyDropdown.SetValueWithoutNotify(
+            difficultyIndex);
+
+        int themeIndex = 0;
+
+        for (int i = 0; i < _themeDatabase.Themes.Length; i++)
+        {
+            TileThemeData themeData =
+                _themeDatabase.Themes[i];
+
+            if (themeData != null &&
+                themeData.ThemeName == _userSettings.TileTheme)
+            {
+                themeIndex = i;
+                break;
+            }
+        }
+
+        TileThemeData theme =
+            _themeDatabase.GetTheme(themeIndex);
+
+        if (theme != null)
+        {
+            _themeName = theme.ThemeName;
+
+            _tileThemeDropdown.SetValueWithoutNotify(
+                themeIndex);
+
+            _tileSelector.SetTheme(theme);
+        }
+        
         LoadQuestion();
 
         _trainingDifficultyDropdown.onValueChanged.AddListener(
@@ -141,6 +192,10 @@ public class TrainingController : MonoBehaviour
         _currentTrainingDifficulty =
             _trainingDifficulties[value];
 
+        _userSettings.TrainingDifficulty =
+            _currentTrainingDifficulty.Id;
+        _userSettingsService.Save(_userSettings);
+        
         NextQuestion();
     }
     
@@ -174,6 +229,10 @@ public class TrainingController : MonoBehaviour
 
         _themeName = theme.ThemeName;
 
+        _userSettings.TileTheme =
+            theme.ThemeName;
+        _userSettingsService.Save(_userSettings);
+        
         _tileSelector.SetTheme(theme);
         
         foreach (MahjongTileUI tile in _handTiles)
