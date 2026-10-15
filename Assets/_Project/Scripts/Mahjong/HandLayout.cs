@@ -3,24 +3,35 @@ using UnityEngine.UI;
 
 namespace RiichiDojo.Mahjong
 {
-    [RequireComponent(typeof(HorizontalLayoutGroup))]
+    [RequireComponent(typeof(GridLayoutGroup))]
     public class HandLayout : MonoBehaviour
     {
         private const int TileCount = 13;
+        private const int TwoRowColumnCount = 7;
+
         private const float MaxTileWidth = 100f;
+        private const float MinTileWidth = 80f;
+
         private const float TileAspectRatio = 3f / 4f;
-        
+
         [SerializeField]
         private float _horizontalPadding = 20f;
 
         [SerializeField]
-        private float _spacing = 5f;
+        private float _verticalPadding = 10f;
 
-        private HorizontalLayoutGroup _layoutGroup;
+        [SerializeField]
+        private float _horizontalSpacing = 5f;
+
+        [SerializeField]
+        private float _verticalSpacing = 5f;
+
+        private GridLayoutGroup _layoutGroup;
 
         private void Awake()
         {
-            _layoutGroup = GetComponent<HorizontalLayoutGroup>();
+            _layoutGroup =
+                GetComponent<GridLayoutGroup>();
         }
 
         private void OnRectTransformDimensionsChange()
@@ -48,46 +59,98 @@ namespace RiichiDojo.Mahjong
             RectTransform rectTransform =
                 (RectTransform)transform;
 
-            float availableWidth =
-                rectTransform.rect.width
-                - _horizontalPadding * 2f
-                - _spacing * (TileCount - 1);
+            float width =
+                rectTransform.rect.width;
 
-            if (availableWidth <= 0f)
+            if (width <= 0f)
             {
                 return;
             }
 
+            float oneRowTileWidth =
+                CalculateTileWidth(
+                    width,
+                    TileCount);
+
+            bool useTwoRows =
+                oneRowTileWidth < MinTileWidth;
+
+            int columnCount =
+                useTwoRows
+                    ? TwoRowColumnCount
+                    : TileCount;
+
             float tileWidth =
+                CalculateTileWidth(
+                    width,
+                    columnCount);
+
+            tileWidth =
                 Mathf.Min(
                     MaxTileWidth,
-                    availableWidth / TileCount);
+                    tileWidth);
 
             float tileHeight =
                 tileWidth / TileAspectRatio;
 
-            foreach (RectTransform child in rectTransform)
-            {
-                LayoutElement layoutElement =
-                    child.GetComponent<LayoutElement>();
-
-                if (layoutElement == null)
-                {
-                    layoutElement =
-                        child.gameObject.AddComponent<LayoutElement>();
-                }
-
-                layoutElement.preferredWidth = tileWidth;
-                layoutElement.preferredHeight = tileHeight;
-            }
-
             _layoutGroup.padding.left =
-                Mathf.RoundToInt(_horizontalPadding);
+                Mathf.RoundToInt(
+                    _horizontalPadding);
 
             _layoutGroup.padding.right =
-                Mathf.RoundToInt(_horizontalPadding);
+                Mathf.RoundToInt(
+                    _horizontalPadding);
 
-            _layoutGroup.spacing = _spacing;
+            _layoutGroup.padding.top =
+                Mathf.RoundToInt(
+                    _verticalPadding);
+
+            _layoutGroup.padding.bottom =
+                Mathf.RoundToInt(
+                    _verticalPadding);
+
+            _layoutGroup.spacing =
+                new Vector2(
+                    _horizontalSpacing,
+                    _verticalSpacing);
+
+            _layoutGroup.constraint =
+                GridLayoutGroup.Constraint.FixedColumnCount;
+
+            _layoutGroup.constraintCount =
+                columnCount;
+
+            _layoutGroup.cellSize =
+                new Vector2(
+                    tileWidth,
+                    tileHeight);
+
+            _layoutGroup.startCorner =
+                GridLayoutGroup.Corner.UpperLeft;
+
+            _layoutGroup.startAxis =
+                GridLayoutGroup.Axis.Horizontal;
+
+            _layoutGroup.childAlignment =
+                TextAnchor.UpperCenter;
+        }
+
+        private float CalculateTileWidth(
+            float containerWidth,
+            int columnCount)
+        {
+            float availableWidth =
+                containerWidth
+                - _horizontalPadding * 2f
+                - _horizontalSpacing *
+                    (columnCount - 1);
+
+            if (availableWidth <= 0f)
+            {
+                return 0f;
+            }
+
+            return availableWidth / columnCount;
         }
     }
 }
