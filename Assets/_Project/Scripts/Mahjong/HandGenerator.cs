@@ -17,6 +17,11 @@ namespace RiichiDojo.Mahjong
             _calculator = new WaitCalculator();
         }
 
+        public HandGenerator(WaitCalculator calculator)
+        {
+            _calculator = calculator;
+        }
+
         public MahjongHand GenerateHand(
             HandGenerationSettings settings)
         {
@@ -41,11 +46,6 @@ namespace RiichiDojo.Mahjong
                     throw new InvalidOperationException(
                         $"Unsupported hand generation type: {generationType}");
             }
-        }
-        
-        public HandGenerator(WaitCalculator calculator)
-        {
-            _calculator = calculator;
         }
 
         public MahjongHand GenerateHand(HandPattern pattern)
@@ -181,8 +181,20 @@ namespace RiichiDojo.Mahjong
                 AddTile(hand, usedCounts, pair);
                 AddTile(hand, usedCounts, pair);
 
+                int attempts = 0;
+                bool failed = false;
+
                 for (int i = 0; i < 4; i++)
                 {
+                    attempts++;
+                    // Защита от бесконечного зацикливания:
+                    // Если за 30 шагов сеты не сошлись, сбрасываем руку и генерируем заново
+                    if (attempts > 30)
+                    {
+                        failed = true;
+                        break;
+                    }
+
                     bool added;
 
                     if (_random.NextDouble() < 0.5)
@@ -192,6 +204,14 @@ namespace RiichiDojo.Mahjong
                             usedCounts,
                             selectedSuits,
                             honorConfiguration);
+
+                        if (!added)
+                        {
+                            added = TryAddRandomSequence(
+                                hand,
+                                usedCounts,
+                                selectedSuits);
+                        }
                     }
                     else
                     {
@@ -199,6 +219,15 @@ namespace RiichiDojo.Mahjong
                             hand,
                             usedCounts,
                             selectedSuits);
+
+                        if (!added)
+                        {
+                            added = TryAddRandomTriplet(
+                                hand,
+                                usedCounts,
+                                selectedSuits,
+                                honorConfiguration);
+                        }
                     }
 
                     if (!added)
@@ -207,7 +236,7 @@ namespace RiichiDojo.Mahjong
                     }
                 }
 
-                if (hand.TileCount == 14)
+                if (!failed && hand.TileCount == 14)
                 {
                     return hand;
                 }
@@ -224,28 +253,44 @@ namespace RiichiDojo.Mahjong
                 return false;
             }
 
-            int suit =
-                selectedSuits[
-                    _random.Next(selectedSuits.Count)];
-
-            int startRank = _random.Next(7);
-
-            int first = suit * 9 + startRank;
-            int second = first + 1;
-            int third = first + 2;
-
-            if (usedCounts[first] >= 4 ||
-                usedCounts[second] >= 4 ||
-                usedCounts[third] >= 4)
+            // Перемешиваем масти для равномерного выбора
+            var shuffledSuits = new List<int>(selectedSuits);
+            for (int i = shuffledSuits.Count - 1; i > 0; i--)
             {
-                return false;
+                int j = _random.Next(i + 1);
+                (shuffledSuits[i], shuffledSuits[j]) = (shuffledSuits[j], shuffledSuits[i]);
             }
 
-            AddTile(hand, usedCounts, (TileType)first);
-            AddTile(hand, usedCounts, (TileType)second);
-            AddTile(hand, usedCounts, (TileType)third);
+            foreach (int suit in shuffledSuits)
+            {
+                var validRanks = new List<int>();
 
-            return true;
+                // Находим все ранги от 0 до 6, у которых есть доступные тайлы
+                for (int startRank = 0; startRank < 7; startRank++)
+                {
+                    int first = suit * 9 + startRank;
+                    if (usedCounts[first] < 4 &&
+                        usedCounts[first + 1] < 4 &&
+                        usedCounts[first + 2] < 4)
+                    {
+                        validRanks.Add(startRank);
+                    }
+                }
+
+                if (validRanks.Count > 0)
+                {
+                    int startRank = validRanks[_random.Next(validRanks.Count)];
+                    int first = suit * 9 + startRank;
+
+                    AddTile(hand, usedCounts, (TileType)first);
+                    AddTile(hand, usedCounts, (TileType)(first + 1));
+                    AddTile(hand, usedCounts, (TileType)(first + 2));
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void AddTile(
@@ -261,21 +306,26 @@ namespace RiichiDojo.Mahjong
         {
             var hand = new MahjongHand();
 
-            hand.AddTile(TileType.Man1);
-            hand.AddTile(TileType.Man1);
-            hand.AddTile(TileType.Man1);
+            // Случайный выбор одной из трёх числовых мастей (Ман, Пин или Со)
+            int suit = _random.Next(3);
+            int firstTile = suit * 9;
 
-            hand.AddTile(TileType.Man2);
-            hand.AddTile(TileType.Man3);
-            hand.AddTile(TileType.Man4);
-            hand.AddTile(TileType.Man5);
-            hand.AddTile(TileType.Man6);
-            hand.AddTile(TileType.Man7);
-            hand.AddTile(TileType.Man8);
+            // 1-1-1
+            hand.AddTile((TileType)firstTile);
+            hand.AddTile((TileType)firstTile);
+            hand.AddTile((TileType)firstTile);
 
-            hand.AddTile(TileType.Man9);
-            hand.AddTile(TileType.Man9);
-            hand.AddTile(TileType.Man9);
+            // 2-3-4-5-6-7-8
+            for (int rank = 1; rank <= 7; rank++)
+            {
+                hand.AddTile((TileType)(firstTile + rank));
+            }
+
+            // 9-9-9
+            int lastTile = firstTile + 8;
+            hand.AddTile((TileType)lastTile);
+            hand.AddTile((TileType)lastTile);
+            hand.AddTile((TileType)lastTile);
 
             return hand;
         }
@@ -526,15 +576,16 @@ namespace RiichiDojo.Mahjong
                 settings.KokushiWeight +
                 settings.ChurenpotoWeight;
 
-            int standardWeight = 100 - specialWeight;
+            // Безопасный расчет веса стандартной руки без краша при сумме > 100
+            int standardWeight = Math.Max(0, 100 - specialWeight);
+            int totalWeight = standardWeight + specialWeight;
 
-            if (standardWeight < 0)
+            if (totalWeight <= 0)
             {
-                throw new InvalidOperationException(
-                    "Special hand weights cannot exceed 100.");
+                return HandGenerationType.Standard;
             }
 
-            int roll = _random.Next(100);
+            int roll = _random.Next(totalWeight);
 
             if (roll < standardWeight)
             {

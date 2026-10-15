@@ -219,6 +219,15 @@ namespace RiichiDojo.Mahjong
                 Destroy(child.gameObject);
             }
 
+            // Исправление: сбрасываем визуальный выбор со всех кнопок перед очисткой словаря
+            foreach (MahjongTileButton button in _selectedButtons.Values)
+            {
+                if (button != null)
+                {
+                    button.SetSelected(false);
+                }
+            }
+
             _selectedTiles.Clear();
             _selectedButtons.Clear();
             _correctAnswerTiles.Clear();
